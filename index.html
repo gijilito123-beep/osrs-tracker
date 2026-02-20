@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resultados del Proyecto - OSRS Tracker Completo</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; color: #1a202c; min-height: 100vh; }
+    .header { background: linear-gradient(135deg, #1a56db 0%, #0e9f6e 100%); color: white; padding: 2rem 1.5rem 2.5rem; }
+    .header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.4rem; }
+    .header p { font-size: 1rem; opacity: 0.85; margin-bottom: 1.5rem; }
+    .header-cards { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .header-card { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 12px; padding: 0.75rem 1.25rem; min-width: 160px; cursor: pointer; }
+    .header-card:hover { background: rgba(255,255,255,0.2); }
+    .header-card .label { font-size: 0.75rem; opacity: 0.8; margin-bottom: 0.2rem; }
+    .header-card .value { font-size: 1.1rem; font-weight: 700; }
+    .header-card .value-bs { font-size: 0.75rem; opacity: 0.9; margin-top: 0.2rem; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 1.5rem; }
+    .section-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .card { background: white; border-radius: 14px; padding: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 1.5rem; }
+    .motivacion-card { background: #fffbeb; border: 1px solid #fde68a; border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: white; border-radius: 14px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+    .stat-card .stat-icon { font-size: 1.2rem; margin-bottom: 0.4rem; }
+    .stat-card .stat-label { font-size: 0.75rem; color: #6b7280; margin-bottom: 0.3rem; }
+    .stat-card .stat-value { font-size: 1.3rem; font-weight: 800; color: #059669; }
+    .cursos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .curso-card { background: white; border-radius: 14px; padding: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+    .curso-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+    .curso-icon { font-size: 1.8rem; }
+    .badge { font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px; }
+    .badge-green { background: #d1fae5; color: #065f46; }
+    .badge-yellow { background: #fef3c7; color: #92400e; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+    .curso-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .curso-detail { font-size: 0.82rem; color: #6b7280; margin-bottom: 0.25rem; }
+    .curso-detail span.highlight { color: #1a202c; font-weight: 600; }
+    .table-wrapper { overflow-x: auto; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    thead tr { background: #f9fafb; }
+    th { text-align: left; padding: 0.75rem 1rem; font-size: 0.8rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e5e7eb; }
+    td { padding: 0.85rem 1rem; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    .monto-cell { color: #059669; font-weight: 700; }
+    .monto-mora { color: #dc2626; font-weight: 700; }
+    .estado-badge { font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.7rem; border-radius: 999px; cursor: pointer; border: none; transition: all 0.2s; }
+    .estado-pendiente { background: #fef3c7; color: #92400e; }
+    .estado-pagado { background: #d1fae5; color: #065f46; }
+    .estado-mora { background: #fee2e2; color: #991b1b; }
+    .objetivos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .objetivo-card { background: white; border-radius: 14px; padding: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+    .objetivo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .objetivo-name { font-size: 1rem; font-weight: 700; }
+    .btn-edit-objetivo { background: none; border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.2rem 0.5rem; font-size: 0.7rem; cursor: pointer; color: #6b7280; }
+    .btn-del-objetivo { background: none; border: 1px solid #fca5a5; color: #ef4444; border-radius: 6px; padding: 0.2rem 0.5rem; cursor: pointer; font-size: 0.7rem; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: #6b7280; margin-bottom: 0.3rem; }
+    .progress-bar-bg { background: #e5e7eb; border-radius: 999px; height: 8px; overflow: hidden; margin-bottom: 0.75rem; }
+    .progress-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #a855f7, #ec4899); transition: width 0.5s ease; }
+    .objetivo-values { display: flex; gap: 1.5rem; font-size: 0.82rem; margin-bottom: 0.5rem; }
+    .objetivo-values .val-label { color: #9ca3af; font-size: 0.72rem; }
+    .objetivo-values .val-num { font-weight: 700; font-size: 0.9rem; cursor: pointer; color: #1a56db; }
+    .tasas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .tasa-card { border-radius: 12px; padding: 1rem 1.25rem; position: relative; }
+    .tasa-card.auto { background: #eff6ff; border: 1px solid #bfdbfe; }
+    .tasa-card.manual { background: #f0fdf4; border: 1px solid #bbf7d0; }
+    .tasa-card.binance-card { background: #fefce8; border: 1px solid #fde68a; }
+    .tasa-label { font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.4rem; }
+    .tasa-value { font-size: 1.4rem; font-weight: 800; }
+    .tasa-card.auto .tasa-value { color: #1d4ed8; }
+    .tasa-card.manual .tasa-value { color: #059669; }
+    .tasa-card.binance-card .tasa-value { color: #b45309; }
+    .tasa-edit-btn { background: none; border: 1px solid #6b7280; border-radius: 6px; padding: 0.2rem 0.5rem; font-size: 0.72rem; cursor: pointer; color: #6b7280; margin-top: 0.4rem; }
+    .btn-primary { background: #1a56db; color: white; border: none; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; font-weight: 600; }
+    .btn-primary:hover { background: #1e40af; }
+    .btn-secondary { background: #f3f4f6; color: #374151; border: none; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; font-weight: 600; }
+    .farmeo-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .farmeo-table thead { background: #f3f4f6; border-bottom: 2px solid #e5e7eb; }
+    .farmeo-table th { padding: 0.75rem; text-align: left; font-weight: 700; color: #374151; }
+    .farmeo-table td { padding: 0.75rem; border-bottom: 1px solid #e5e7eb; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; border-radius: 14px; padding: 2rem; max-width: 500px; width: 90%; }
+    .modal-content h2 { margin-bottom: 1rem; }
+    .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 0.5rem; margin-bottom: 1rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.9rem; }
+    .modal-buttons { display: flex; gap: 1rem; }
+    .modal-buttons button { flex: 1; }
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 1rem; margin: 1rem 0; }
+    footer { background: #1f2937; color: white; text-align: center; padding: 1.5rem; margin-top: 3rem; font-size: 0.85rem; }
+    @media (max-width: 600px) { .header h1 { font-size: 1.5rem; } .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎮 Resultados del Proyecto</h1>
+  <p>Seguimiento integral de tus metas, cursos y progreso diario</p>
+  <div class="header-cards">
+    <div class="header-card">
+      <div class="label">📅 Inicio</div>
+      <div class="value">11-Feb-2026</div>
+    </div>
+    <div class="header-card">
+      <div class="label">📍 Ubicación</div>
+      <div class="value">Maturín, Venezuela</div>
+    </div>
+    <div class="header-card" onclick="abrirModalBank()">
+      <div class="label">💰 Bank Actual</div>
+      <div class="value" id="bankActualGP">44.5 m GP</div>
+      <div class="value-bs" id="bankActualBs">0 Bs</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="motivacion-card">
+    <div style="flex:1">
+      <div style="font-size:0.85rem;font-weight:700;color:#92400e;margin-bottom:0.2rem;">💡 Motivación del Día</div>
+      <div style="font-size:0.95rem;color:#92400e;font-weight:500;">💪 La disciplina es el puente entre tus metas y tus logros. ¡A seguir adelante!</div>
+    </div>
+  </div>
+
+  <div class="section-title">📊 Análisis de Rendimiento</div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-label">Promedio Diario</div>
+      <div class="stat-value" id="promedioDiario">20.56 m GP</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div class="stat-label">Días a Meta</div>
+      <div class="stat-value" id="diasMeta">178 días</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-label">Valor LMS</div>
+      <div class="stat-value" id="valorLMS">117.65 m GP</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-label">Total Generado</div>
+      <div class="stat-value" id="totalGenerado">218.85 m GP</div>
+    </div>
+  </div>
+
+  <div class="section-title">📚 Mis Cursos</div>
+  <div class="cursos-grid">
+    <div class="curso-card">
+      <div class="curso-header">
+        <div class="curso-icon">🌍</div>
+        <span class="badge badge-green">Activo</span>
+      </div>
+      <div class="curso-name">Curso de Inglés</div>
+      <div class="curso-detail">📅 Viernes</div>
+      <div class="curso-detail">🕐 8:00 AM - 10:00 AM</div>
+      <div class="curso-detail">💵 <span class="highlight">Gratis</span></div>
+      <div class="curso-detail">⏱ Duración: <span class="highlight">Indefinido</span></div>
+    </div>
+    <div class="curso-card">
+      <div class="curso-header">
+        <div class="curso-icon">💻</div>
+        <span class="badge badge-yellow">Pendiente de pago</span>
+      </div>
+      <div class="curso-name">Curso Pago</div>
+      <div class="curso-detail">📅 Sábado</div>
+      <div class="curso-detail">🕐 10:00 AM - 12:00 PM</div>
+      <div class="curso-detail">💵 <span class="highlight">$20</span></div>
+      <div class="curso-detail">⏱ Duración: <span class="highlight">3 meses</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">💰 Tasas de Cambio</div>
+  <div class="tasas-grid">
+    <div class="tasa-card auto">
+      <div class="tasa-label">BCV (USD/VES) <span style="font-size:0.8em;color:#6b7280;">(Auto)</span></div>
+      <div class="tasa-value" id="tasaBCV">0.00</div>
+    </div>
+    <div class="tasa-card binance-card">
+      <div class="tasa-label">Binance P2P (USD/VES) <span style="font-size:0.8em;color:#6b7280;">(Auto)</span></div>
+      <div class="tasa-value" id="tasaBinance">0.00</div>
+    </div>
+    <div class="tasa-card manual">
+      <div class="tasa-label">GP/USD <span style="font-size:0.8em;color:#6b7280;">(Manual)</span></div>
+      <div class="tasa-value" id="tasaGP">0.0002</div>
+      <button class="tasa-edit-btn" onclick="abrirModalTasaGP()">Editar</button>
+    </div>
+  </div>
+
+  <div class="section-title">📅 Farmeo Diario</div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <button class="btn-primary" onclick="abrirModalFarmeo()">➕ Añadir Día</button>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="btn-secondary" onclick="paginaAnterior()">← Anterior</button>
+        <span style="align-self:center;font-weight:600;" id="paginaInfo">1/1</span>
+        <button class="btn-secondary" onclick="paginaSiguiente()">Siguiente →</button>
+      </div>
+    </div>
+    <div class="table-wrapper">
+      <table class="farmeo-table">
+        <thead>
+          <tr>
+            <th>Día</th>
+            <th>Fecha</th>
+            <th>GP Farmeado</th>
+            <th>Meta</th>
+            <th>ToB</th>
+            <th>Drops</th>
+            <th>Notas</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="farmeoBody">
+          <!-- Filas de farmeo se renderizarán aquí -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">📈 Gráfica de Progreso Mensual</div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <button class="btn-secondary" onclick="mesAnterior()">← Mes Anterior</button>
+      <span style="align-self:center;font-weight:600;" id="mesActual">Febrero 2026</span>
+      <button class="btn-secondary" onclick="mesSiguiente()">Mes Siguiente →</button>
+    </div>
+    <canvas id="farmeoChart"></canvas>
+  </div>
+
+  <div class="section-title">🎯 Mis Objetivos</div>
+  <div class="card">
+    <button class="btn-primary" style="margin-bottom:1rem;" onclick="abrirModalObjetivo()">➕ Añadir Objetivo</button>
+    <div class="objetivos-grid" id="objetivosGrid">
+      <!-- Objetivos se renderizarán aquí -->
+    </div>
+  </div>
+
+  <div class="section-title">💸 Pagos del Curso</div>
+  <div class="card">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th>Fecha Límite</th>
+            <th>Monto</th>
+            <th>Monto (Bs)</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tablaPayosBody">
+          <!-- Pagos se renderizarán aquí -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p id="footerDate">Última actualización: 20 de febrero de 2026</p>
+</footer>
+
+<!-- Modales -->
+
+<!-- Modal Añadir Farmeo -->
+<div id="modalFarmeo" class="modal">
+  <div class="modal-content">
+    <h2>➕ Añadir Día de Farmeo</h2>
+    <input type="date" id="farmeoFecha" />
+    <input type="number" id="farmeoGP" placeholder="GP Farmeado (en millones)" step="0.01" />
+    <input type="number" id="farmeoToB" placeholder="ToB (cantidad)" step="1" />
+    <select id="farmeoPurple" onchange="togglePurpleGPInput()">
+      <option value="none">Sin Purple</option>
+      <option value="elysian">Elysian Spirit Shield</option>
+      <option value="ancestral_hat">Ancestral Hat</option>
+      <option value="ancestral_robe_top">Ancestral Robe Top</option>
+      <option value="ancestral_robe_bottom">Ancestral Robe Bottom</option>
+      <option value="scythe_of_vitur">Scythe of Vitur</option>
+      <option value="ghrazi_rapier">Ghrazi Rapier</option>
+      <option value="kodai_insignia">Kodai Insignia</option>
+      <option value="other">Otro (especificar GP)</option>
+    </select>
+    <input type="number" id="farmeoPurpleGP" placeholder="GP del Purple (en millones)" step="0.01" style="display:none;" />
+    <textarea id="farmeoNotas" placeholder="Notas (ej: boss, actividad)"></textarea>
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="cerrarModalFarmeo()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarFarmeo()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar Tasa GP -->
+<div id="modalTasaGP" class="modal">
+  <div class="modal-content">
+    <h2>Editar Tasa GP/USD</h2>
+    <input type="number" id="inputTasaGP" step="0.00001" />
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="cerrarModalTasaGP()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarTasaGP()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Bank Actual -->
+<div id="modalBank" class="modal">
+  <div class="modal-content">
+    <h2>Editar Bank Actual</h2>
+    <input type="number" id="inputBankActualGP" placeholder="Bank Actual (en millones de GP)" step="0.1" />
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="cerrarModalBank()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarBankActual()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Objetivo -->
+<div id="modalObjetivo" class="modal">
+  <div class="modal-content">
+    <h2 id="modalObjetivoTitulo">➕ Nuevo Objetivo</h2>
+    <input type="text" id="modalObjetivoNombre" placeholder="Nombre del Objetivo" />
+    <input type="number" id="modalObjetivoMeta" placeholder="Meta (en millones de GP)" step="0.1" />
+    <input type="text" id="modalObjetivoPlazo" placeholder="Plazo (ej: 1 mes, 3 semanas)" />
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="cerrarModalObjetivo()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarObjetivo()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let state = {
+    nextId: 1,
+    farmeo: [],
+    objetivos: [],
+    tasaGP: 0.0002,
+    tasaBCV: 0,
+    tasaBinance: 0,
+    bankActualGP: 44.5,
+    pagos: []
+  };
+
+  let chartFarmeo;
+  let paginaActualFarmeo = 1;
+  const diasPorPagina = 10;
+  let mesActualGrafica = new Date();
+  let tasaBCVActual = 0;
+  let tasaBinanceActual = 0;
+
+  // --- Funciones de Persistencia --- //
+  async function cargarDatos() {
+    try {
+      const response = await fetch("data.json");
+      if (response.ok) {
+        const data = await response.json();
+        // Asegurarse de que todas las propiedades existan, si no, usar valores por defecto
+        state = {
+          nextId: data.nextId || 1,
+          farmeo: data.farmeo || [],
+          objetivos: data.objetivos || [],
+          tasaGP: data.tasaGP || 0.0002,
+          tasaBCV: data.tasaBCV || 0,
+          tasaBinance: data.tasaBinance || 0,
+          bankActualGP: data.bankActualGP || 44.5,
+          pagos: data.pagos || []
+        };
+      } else {
+        console.warn("No se encontró data.json o hubo un error al cargarlo. Se usará el estado inicial.");
+      }
+    } catch (error) {
+      console.error("Error al cargar data.json:", error);
+    }
+  }
+
+  async function guardarDatos() {
+    // Esta función será manejada por Manus para actualizar el archivo data.json en GitHub
+    // Por ahora, solo guardamos en localStorage para pruebas locales si es necesario
+    // Pero la idea es que Manus haga el commit a GitHub con los nuevos datos
+    console.log("Datos a guardar:", state);
+    // Para el despliegue en GitHub Pages, Manus se encargará de actualizar data.json
+    // Para pruebas locales, puedes descomentar la siguiente línea:
+    // localStorage.setItem('osrsTrackerState', JSON.stringify(state));
+  }
+
+  // --- Funciones de Utilidad --- //
+  function formatFecha(fecha) { const d = new Date(fecha); return d.toLocaleDateString('es-VE'); }
+  function formatGP(gp) { return gp.toFixed(2) + ' m GP'; }
+  function formatUSD(usd) { return '$' + usd.toFixed(2); }
+  function formatBs(bs) { return bs.toFixed(2) + ' Bs'; }
+
+  // --- Tasas de Cambio --- //
+  async function cargarTasasBCV() {
+    // Implementar la lógica para obtener la tasa BCV
+    // Por ahora, un valor fijo o una API dummy
+    tasaBCVActual = 36.5; // Ejemplo
+    document.getElementById('tasaBCV').textContent = tasaBCVActual.toFixed(2);
+  }
+
+  async function cargarTasasBinance() {
+    // Implementar la lógica para obtener la tasa Binance
+    // Por ahora, un valor fijo o una API dummy
+    tasaBinanceActual = 37.0; // Ejemplo
+    document.getElementById('tasaBinance').textContent = tasaBinanceActual.toFixed(2);
+  }
+
+  function renderBankActual() {
+    document.getElementById('bankActualGP').textContent = formatGP(state.bankActualGP);
+    const usd = state.bankActualGP * state.tasaGP;
+    const bs = tasaBCVActual ? usd * tasaBCVActual : 0;
+    document.getElementById('bankActualBs').textContent = formatBs(bs);
+  }
+
+  function abrirModalBank() {
+    document.getElementById('inputBankActualGP').value = state.bankActualGP;
+    document.getElementById('modalBank').classList.add('active');
+  }
+
+  function cerrarModalBank() {
+    document.getElementById('modalBank').classList.remove('active');
+  }
+
+  function guardarBankActual() {
+    const newBankGP = parseFloat(document.getElementById('inputBankActualGP').value);
+    if (!isNaN(newBankGP)) {
+      state.bankActualGP = newBankGP;
+      guardarDatos();
+      renderBankActual();
+      cerrarModalBank();
+    } else {
+      alert('Por favor, introduce un valor numérico válido para el Bank Actual.');
+    }
+  }
+
+  function abrirModalTasaGP() {
+    document.getElementById('inputTasaGP').value = state.tasaGP;
+    document.getElementById('modalTasaGP').classList.add('active');
+  }
+
+  function cerrarModalTasaGP() {
+    document.getElementById('modalTasaGP').classList.remove('active');
+  }
+
+  function guardarTasaGP() {
+    const newTasaGP = parseFloat(document.getElementById('inputTasaGP').value);
+    if (!isNaN(newTasaGP)) {
+      state.tasaGP = newTasaGP;
+      guardarDatos();
+      document.getElementById('tasaGP').textContent = newTasaGP.toFixed(5);
+      cerrarModalTasaGP();
+      renderBankActual(); // Actualizar bank con nueva tasa
+      renderFarmeo(); // Actualizar farmeo con nueva tasa
+      renderTablaPagos(); // Actualizar pagos con nueva tasa
+    } else {
+      alert('Por favor, introduce un valor numérico válido para la Tasa GP/USD.');
+    }
+  }
+
+  // --- Farmeo Diario --- //
+  function abrirModalFarmeo() {
+    document.getElementById('farmeoFecha').valueAsDate = new Date();
+    document.getElementById('farmeoGP').value = '';
+    document.getElementById('farmeoToB').value = '';
+    document.getElementById('farmeoPurple').value = 'none';
+    document.getElementById('farmeoPurpleGP').value = '';
+    document.getElementById('farmeoPurpleGP').style.display = 'none';
+    document.getElementById('farmeoNotas').value = '';
+    document.getElementById('modalFarmeo').classList.add('active');
+  }
+
+  function cerrarModalFarmeo() {
+    document.getElementById('modalFarmeo').classList.remove('active');
+  }
+
+  function togglePurpleGPInput() {
+    const purpleSelect = document.getElementById('farmeoPurple');
+    const purpleGPInput = document.getElementById('farmeoPurpleGP');
+    if (purpleSelect.value === 'other') {
+      purpleGPInput.style.display = 'block';
+    } else {
+      purpleGPInput.style.display = 'none';
+    }
+  }
+
+  async function guardarFarmeo() {
+    const fecha = document.getElementById('farmeoFecha').value;
+    let gp = parseFloat(document.getElementById('farmeoGP').value) || 0;
+    const tob = parseInt(document.getElementById('farmeoToB').value) || 0;
+    const purple = document.getElementById('farmeoPurple').value;
+    let notas = document.getElementById('farmeoNotas').value.trim();
+    let purpleGP = parseFloat(document.getElementById('farmeoPurpleGP').value) || 0;
+
+    if (!fecha) { alert('Por favor, selecciona una fecha.'); return; }
+
+    // Lógica para purples (drops)
+    if (purple !== 'none' && purple !== 'other') {
+      // Aquí se integrará la API de OSRS GE para obtener el precio del item
+      // Por ahora, un valor dummy
+      const itemPrices = {
+        'elysian': 1000, // Ejemplo en millones
+        'ancestral_hat': 500,
+        'ancestral_robe_top': 700,
+        'ancestral_robe_bottom': 600,
+        'scythe_of_vitur': 1500,
+        'ghrazi_rapier': 800,
+        'kodai_insignia': 300
+      };
+      const itemGP = itemPrices[purple] || 0;
+      gp += itemGP;
+      notas += ` [${purple.replace(/_/g, ' ')}: ${itemGP.toFixed(2)}m]`;
+    } else if (purple === 'other' && purpleGP > 0) {
+      gp += purpleGP;
+      notas += ` [Purple: ${purpleGP.toFixed(2)}m]`;
+    }
+
+    state.farmeo.push({ id: state.nextId++, fecha: fecha, gp: gp, tob: tob, notas: notas });
+    state.farmeo.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)); // Ordenar por fecha
+    guardarDatos();
+    renderFarmeo();
+    cerrarModalFarmeo();
+  }
+
+  function eliminarDia(id) {
+    if (!confirm('¿Eliminar este día de farmeo?')) return;
+    state.farmeo = state.farmeo.filter(d => d.id !== id);
+    guardarDatos();
+    renderFarmeo();
+  }
+
+  function renderFarmeo() {
+    const tbody = document.getElementById('farmeoBody');
+    tbody.innerHTML = '';
+    let totalGP = 0, totalUSD = 0, totalBs = 0, totalToB = 0;
+
+    state.farmeo.forEach((dia) => {
+      totalGP += dia.gp;
+      const usd = dia.gp * state.tasaGP;
+      totalUSD += usd;
+      if (tasaBCVActual) totalBs += usd * tasaBCVActual;
+      totalToB += dia.tob || 0;
+    });
+
+    const totalPaginas = Math.ceil(state.farmeo.length / diasPorPagina);
+    if (paginaActualFarmeo > totalPaginas) paginaActualFarmeo = totalPaginas || 1;
+    
+    const inicio = (paginaActualFarmeo - 1) * diasPorPagina;
+    const fin = inicio + diasPorPagina;
+    const diasPagina = state.farmeo.slice(inicio, fin);
+
+    diasPagina.forEach((dia, idxPagina) => {
+      const idxGlobal = state.farmeo.indexOf(dia) + 1; // Usar el índice global para el número de día
+      const usd = (dia.gp * state.tasaGP).toFixed(2);
+      const bs = tasaBCVActual ? (parseFloat(usd) * tasaBCVActual).toFixed(2) : '—';
+      const metaTexto = dia.gp.toFixed(1) + ' / 15-20m'; // Esto es un placeholder, se necesita lógica real de meta
+      const tobTexto = (dia.tob || 0) + ' / 5'; // Esto es un placeholder, se necesita lógica real de meta
+      const notasCorta = dia.notas ? dia.notas.substring(0, 15) + (dia.notas.length > 15 ? '...' : '') : '—';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>Día ${idxGlobal}</td>
+        <td>${formatFecha(dia.fecha)}</td>
+        <td contenteditable="true" onblur="editarFarmeoGP(${dia.id}, this.textContent)">${dia.gp.toFixed(2)} m</td>
+        <td>${metaTexto}</td>
+        <td>${tobTexto}</td>
+        <td>${dia.notas.includes('Purple') ? '💎' : '—'}</td>
+        <td title="${dia.notas}">${notasCorta}</td>
+        <td><button class="btn-secondary" style="padding:0.3rem 0.6rem;" onclick="eliminarDia(${dia.id})">🗑</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('paginaInfo').textContent = `${paginaActualFarmeo}/${totalPaginas || 1}`;
+    document.getElementById('totalGP').textContent = totalGP.toFixed(2) + ' m';
+    document.getElementById('totalUSD').textContent = '$' + totalUSD.toFixed(2);
+    document.getElementById('totalBs').textContent = tasaBCVActual ? totalBs.toFixed(2) + ' Bs' : '—';
+    document.getElementById('totalDias').textContent = state.farmeo.length;
+    document.getElementById('promedioDiario').textContent = state.farmeo.length > 0 ? (totalGP / state.farmeo.length).toFixed(2) + ' m GP' : '0 m GP';
+    document.getElementById('totalGenerado').textContent = totalGP.toFixed(2) + ' m GP';
+
+    renderGraficaMensual();
+  }
+
+  function editarFarmeoGP(id, newGP) {
+    const dia = state.farmeo.find(d => d.id === id);
+    if (dia) {
+      const parsedGP = parseFloat(newGP);
+      if (!isNaN(parsedGP)) {
+        dia.gp = parsedGP;
+        guardarDatos();
+        renderFarmeo();
+        renderBankActual();
+      } else {
+        alert('Valor GP inválido.');
+        renderFarmeo(); // Re-render para restaurar el valor original
+      }
+    }
+  }
+
+  function paginaAnterior() { if (paginaActualFarmeo > 1) { paginaActualFarmeo--; renderFarmeo(); } }
+  function paginaSiguiente() { const totalPaginas = Math.ceil(state.farmeo.length / diasPorPagina) || 1; if (paginaActualFarmeo < totalPaginas) { paginaActualFarmeo++; renderFarmeo(); } }
+
+  // --- Gráfica de Progreso Mensual --- //
+  function renderGraficaMensual() {
+    const mes = mesActualGrafica.getMonth();
+    const año = mesActualGrafica.getFullYear();
+
+    const diasMes = state.farmeo.filter(d => {
+      const fecha = new Date(d.fecha);
+      return fecha.getMonth() === mes && fecha.getFullYear() === año;
+    });
+
+    const labels = diasMes.map(d => { const fecha = new Date(d.fecha); return 'D' + fecha.getDate(); });
+    const datosGP = diasMes.map(d => d.gp);
+    const datosBank = diasMes.map((d, i) => {
+      let acumulado = 0;
+      for (let j = 0; j <= i; j++) { acumulado += diasMes[j].gp * state.tasaGP; }
+      return acumulado;
+    });
+
+    const ctx = document.getElementById('farmeoChart');
+    if (!ctx) return;
+
+    if (chartFarmeo) chartFarmeo.destroy();
+
+    chartFarmeo = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          { label: 'GP Farmeado', data: datosGP, backgroundColor: '#0e9f6e', borderColor: '#0e9f6e', borderWidth: 1, yAxisID: 'y' },
+          { label: 'Bank Acumulado (USD)', data: datosBank, borderColor: '#1a56db', backgroundColor: 'rgba(26, 86, 219, 0.1)', borderWidth: 2, type: 'line', yAxisID: 'y1', tension: 0.4 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: true, position: 'top' } },
+        scales: {
+          y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'GP Farmeado' } },
+          y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'Bank (USD)' }, grid: { drawOnChartArea: false } }
+        }
+      }
+    });
+
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    document.getElementById('mesActual').textContent = meses[mes] + ' ' + año;
+  }
+
+  function mesAnterior() { mesActualGrafica.setMonth(mesActualGrafica.getMonth() - 1); renderGraficaMensual(); }
+  function mesSiguiente() { mesActualGrafica.setMonth(mesActualGrafica.getMonth() + 1); renderGraficaMensual(); }
+
+  // --- Objetivos --- //
+  function renderObjetivos() {
+    const grid = document.getElementById('objetivosGrid');
+    grid.innerHTML = '';
+    state.objetivos.forEach(obj => {
+      const porcentaje = Math.min((obj.actual / obj.meta) * 100, 100);
+      const card = document.createElement('div');
+      card.className = 'objetivo-card';
+      card.innerHTML = `
+        <div class="objetivo-header">
+          <div class="objetivo-name">${obj.nombre}</div>
+          <div><button class="btn-edit-objetivo" onclick="editarObjetivo(${obj.id})">✏️</button><button class="btn-del-objetivo" onclick="eliminarObjetivo(${obj.id})">🗑</button></div>
+        </div>
+        <div class="progress-label"><span>${porcentaje.toFixed(0)}%</span></div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${porcentaje}%"></div></div>
+        <div class="objetivo-values">
+          <div><div class="val-label">Actual</div><div class="val-num" contenteditable="true" onblur="editarActualObjetivo(${obj.id}, this.textContent)">${obj.actual.toFixed(1)} m</div></div>
+          <div><div class="val-label">Meta</div><div class="val-num">${obj.meta.toFixed(1)} m</div></div>
+        </div>
+        <div style="font-size:0.78rem;color:#6b7280;">📅 ${obj.plazo}</div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function abrirModalObjetivo() {
+    document.getElementById('modalObjetivoTitulo').textContent = '➕ Nuevo Objetivo';
+    document.getElementById('modalObjetivoNombre').value = '';
+    document.getElementById('modalObjetivoMeta').value = '';
+    document.getElementById('modalObjetivoPlazo').value = '';
+    document.getElementById('modalObjetivo').classList.add('active');
+  }
+
+  function cerrarModalObjetivo() { document.getElementById('modalObjetivo').classList.remove('active'); }
+
+  function guardarObjetivo() {
+    const nombre = document.getElementById('modalObjetivoNombre').value.trim();
+    const meta = parseFloat(document.getElementById('modalObjetivoMeta').value);
+    const plazo = document.getElementById('modalObjetivoPlazo').value;
+    if (!nombre || isNaN(meta) || !plazo) { alert('Por favor completa todos los campos'); return; }
+    state.objetivos.push({ id: state.nextId++, nombre: nombre, meta: meta, actual: 0, plazo: plazo });
+    guardarDatos(); renderObjetivos(); cerrarModalObjetivo();
+  }
+
+  function editarObjetivo(id) { alert('Edición de objetivos: próximamente'); }
+  
+  function editarActualObjetivo(id, newActual) {
+    const objetivo = state.objetivos.find(o => o.id === id);
+    if (objetivo) {
+      const parsedActual = parseFloat(newActual);
+      if (!isNaN(parsedActual)) {
+        objetivo.actual = parsedActual;
+        guardarDatos();
+        renderObjetivos();
+      } else {
+        alert('Valor actual inválido.');
+        renderObjetivos(); // Re-render para restaurar el valor original
+      }
+    }
+  }
+
+  function eliminarObjetivo(id) {
+    if (!confirm('¿Eliminar este objetivo?')) return;
+    state.objetivos = state.objetivos.filter(o => o.id !== id);
+    guardarDatos();
+    renderObjetivos();
+  }
+
+  // --- Pagos del Curso --- //
+  function renderTablaPagos() {
+    const tbody = document.getElementById('tablaPayosBody');
+    tbody.innerHTML = '';
+
+    // Inicializar pagos si no existen
+    if (state.pagos.length === 0) {
+      const mesesCurso = ['Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero']; // Ejemplo para 12 meses
+      const añoActual = new Date().getFullYear();
+      for (let i = 0; i < mesesCurso.length; i++) {
+        const mesIdx = (new Date(mesesCurso[i] + ' 1, ' + añoActual).getMonth());
+        const fechaLimite = new Date(añoActual, mesIdx, 10); // Día 10 de cada mes
+        state.pagos.push({
+          id: state.nextId++,
+          mes: mesesCurso[i],
+          fechaLimite: fechaLimite.toISOString().split('T')[0],
+          monto: 20,
+          estado: 'Pendiente'
+        });
+      }
+      guardarDatos();
+    }
+
+    state.pagos.forEach(pago => {
+      const fechaLimite = new Date(pago.fechaLimite);
+      const hoy = new Date();
+      hoy.setHours(0,0,0,0); // Normalizar a inicio del día
+
+      let montoFinal = pago.monto;
+      let estadoClase = '';
+
+      if (pago.estado === 'Pagado') {
+        estadoClase = 'estado-pagado';
+      } else if (fechaLimite < hoy && pago.estado === 'Pendiente') {
+        montoFinal = pago.monto * 1.5; // 50% de mora
+        estadoClase = 'estado-mora';
+        pago.estado = 'Mora'; // Actualizar estado a Mora si aplica
+      } else if (pago.estado === 'Mora') {
+        montoFinal = pago.monto * 1.5; // Mantener mora si ya estaba en mora
+        estadoClase = 'estado-mora';
+      } else {
+        estadoClase = 'estado-pendiente';
+      }
+
+      const montoBS = tasaBCVActual ? (montoFinal * tasaBCVActual).toFixed(2) : '—';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${pago.mes}</td>
+        <td>${formatFecha(pago.fechaLimite)}</td>
+        <td class="monto-cell">$${montoFinal.toFixed(2)}</td>
+        <td>${montoBS} Bs</td>
+        <td><button class="estado-badge ${estadoClase}" onclick="toggleEstadoPago(${pago.id})">${pago.estado}</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+    guardarDatos(); // Guardar cualquier cambio de estado a 'Mora'
+  }
+
+  function toggleEstadoPago(id) {
+    const pago = state.pagos.find(p => p.id === id);
+    if (pago) {
+      if (pago.estado === 'Pendiente') {
+        pago.estado = 'Pagado';
+      } else if (pago.estado === 'Pagado') {
+        pago.estado = 'Pendiente'; // O podrías permitir 'Mora' si se desea revertir
+      } else if (pago.estado === 'Mora') {
+        pago.estado = 'Pagado'; // Si paga estando en mora
+      }
+      guardarDatos();
+      renderTablaPagos();
+    }
+  }
+
+  // --- Inicialización --- //
+  async function init() {
+    await cargarDatos();
+    await cargarTasasBCV();
+    await cargarTasasBinance();
+    renderBankActual();
+    renderFarmeo();
+    renderObjetivos();
+    renderTablaPagos();
+    actualizarFooter();
+  }
+
+  function actualizarFooter() { const ahora = new Date(); const opciones = { year: 'numeric', month: 'long', day: 'numeric' }; document.getElementById('footerDate').textContent = 'Última actualización: ' + ahora.toLocaleDateString('es-VE', opciones); }
+
+  init();
+</script>
+
+</body>
+</html>
