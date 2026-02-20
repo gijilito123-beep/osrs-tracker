@@ -356,25 +356,25 @@
   // --- Funciones de Persistencia --- //
   async function cargarDatos() {
     try {
-      const response = await fetch("data.json");
+      console.log("Cargando datos desde data.json...");
+      // Añadir un timestamp para evitar el caché del navegador
+      const response = await fetch("data.json?t=" + new Date().getTime());
       if (response.ok) {
         const data = await response.json();
-        // Asegurarse de que todas las propiedades existan, si no, usar valores por defecto
-        state = {
-          nextId: data.nextId || 1,
-          farmeo: data.farmeo || [],
-          objetivos: data.objetivos || [],
-          tasaGP: data.tasaGP || 0.0002,
-          tasaBCV: data.tasaBCV || 0,
-          tasaBinance: data.tasaBinance || 0,
-          bankActualGP: data.bankActualGP || 44.5,
-          pagos: data.pagos || []
-        };
+        console.log("Datos cargados exitosamente:", data);
+        state.nextId = data.nextId || 1;
+        state.farmeo = data.farmeo || [];
+        state.objetivos = data.objetivos || [];
+        state.tasaGP = data.tasaGP || 0.0002;
+        state.tasaBCV = data.tasaBCV || 0;
+        state.tasaBinance = data.tasaBinance || 0;
+        state.bankActualGP = data.bankActualGP || 44.5;
+        state.pagos = data.pagos || [];
       } else {
-        console.warn("No se encontró data.json o hubo un error al cargarlo. Se usará el estado inicial.");
+        console.error("Error al cargar data.json: " + response.status);
       }
     } catch (error) {
-      console.error("Error al cargar data.json:", error);
+      console.error("Error en cargarDatos:", error);
     }
   }
 
@@ -677,7 +677,7 @@
           <div><div class="val-label">Meta</div><div class="val-num">${obj.meta.toFixed(1)} m</div></div>
         </div>
         <div style="font-size:0.78rem;color:#6b7280;">📅 ${obj.plazo}</div>
-        ${obj.detalles ? `<div style="font-size:0.75rem;color:#6b7280;margin-top:0.5rem;">Progreso diario: Día 6: ${obj.detalles.dia6}pts | Día 7: ${obj.detalles.dia7}pts | Día 8: ${obj.detalles.dia8}pts | Día 9: ${obj.detalles.dia9}pts</div>` : ''}`
+        ${obj.detalles ? `<div style="font-size:0.75rem;color:#6b7280;margin-top:0.5rem;">Progreso diario: Día 6: ${obj.detalles.dia6}pts | Día 7: ${obj.detalles.dia7}pts | Día 8: ${obj.detalles.dia8}pts | Día 9: ${obj.detalles.dia9}pts</div>` : ''}
       `;
       grid.appendChild(card);
     });
