@@ -77,8 +77,14 @@
       "id": 1,
       "nombre": "Completar LMS",
       "meta": 500,
-      "actual": 403,
-      "plazo": "Completado 19-feb"
+      "actual": 500,
+      "plazo": "Completado 19-feb",
+      "detalles": {
+        "dia6": 107,
+        "dia7": 136,
+        "dia8": 160,
+        "dia9": 97
+      }
     }
   ],
   "tasaGP": 0.0002,

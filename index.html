@@ -106,10 +106,12 @@
       <div class="label">📍 Ubicación</div>
       <div class="value">Maturín, Venezuela</div>
     </div>
-    <div class="header-card" onclick="abrirModalBank()">
+    <div class="header-card" onclick="abrirModalBank()" style="cursor: pointer;">
       <div class="label">💰 Bank Actual</div>
       <div class="value" id="bankActualGP">44.5 m GP</div>
       <div class="value-bs" id="bankActualBs">0 Bs</div>
+      <div class="value-bs" id="bankActualUSD">$0.00 (BCV)</div>
+      <div class="value-bs" id="bankActualBinance">$0.00 (Binance)</div>
     </div>
   </div>
 </div>
@@ -412,6 +414,8 @@
     const usd = state.bankActualGP * state.tasaGP;
     const bs = tasaBCVActual ? usd * tasaBCVActual : 0;
     document.getElementById('bankActualBs').textContent = formatBs(bs);
+    document.getElementById('bankActualUSD').textContent = '$' + usd.toFixed(2) + ' (BCV)';
+    document.getElementById('bankActualBinance').textContent = '$' + usd.toFixed(2) + ' (Binance)';
   }
 
   function abrirModalBank() {
@@ -673,6 +677,7 @@
           <div><div class="val-label">Meta</div><div class="val-num">${obj.meta.toFixed(1)} m</div></div>
         </div>
         <div style="font-size:0.78rem;color:#6b7280;">📅 ${obj.plazo}</div>
+        ${obj.detalles ? `<div style="font-size:0.75rem;color:#6b7280;margin-top:0.5rem;">Progreso diario: Día 6: ${obj.detalles.dia6}pts | Día 7: ${obj.detalles.dia7}pts | Día 8: ${obj.detalles.dia8}pts | Día 9: ${obj.detalles.dia9}pts</div>` : ''}`
       `;
       grid.appendChild(card);
     });
