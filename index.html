@@ -3,82 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OSRS Tracker - Farmeo</title>
+  <title>OSRS Tracker</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; color: #1a202c; min-height: 100vh; }
-    .header { background: linear-gradient(135deg, #1a56db 0%, #0e9f6e 100%); color: white; padding: 1.5rem; }
-    .header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.3rem; }
-    .header p { font-size: 0.9rem; opacity: 0.9; margin-bottom: 1rem; }
-    .header-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem; }
-    .info-card { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 0.8rem 1rem; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
-    .info-card:hover { background: rgba(255,255,255,0.18); }
-    .info-label { opacity: 0.8; margin-bottom: 0.2rem; font-size: 0.75rem; }
-    .info-value { font-weight: 700; font-size: 0.95rem; }
-    .info-sub { opacity: 0.75; font-size: 0.7rem; margin-top: 0.1rem; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f5f3f0 0%, #e8e3dd 100%); color: #2d2416; min-height: 100vh; }
+    .header { background: linear-gradient(135deg, #1a1410 0%, #3d3428 100%); color: #d4af37; padding: 1.5rem; border-bottom: 3px solid #d4af37; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
+    .header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+    .header h1:hover { text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+    .header-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
+    .info-card { background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 6px; padding: 0.6rem 0.8rem; font-size: 0.8rem; }
+    .info-label { opacity: 0.7; margin-bottom: 0.2rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+    .info-value { font-weight: 700; font-size: 0.9rem; color: #d4af37; }
+    .info-sub { opacity: 0.6; font-size: 0.65rem; margin-top: 0.1rem; }
+    .header-tasas { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; }
+    .tasa-mini { background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 6px; padding: 0.5rem; font-size: 0.75rem; }
+    .tasa-mini-label { opacity: 0.6; margin-bottom: 0.1rem; }
+    .tasa-mini-value { font-weight: 700; color: #d4af37; font-size: 0.85rem; }
     .container { max-width: 1100px; margin: 0 auto; padding: 1rem; }
-    .section-title { font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 0.8rem 0; }
-    .card { background: white; border-radius: 10px; padding: 1.2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
-    .tasas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-    .tasa-card { border-radius: 10px; padding: 1rem; border: 2px solid; }
-    .tasa-card.bcv { background: #eff6ff; border-color: #1d4ed8; }
-    .tasa-card.binance { background: #fefce8; border-color: #b45309; }
-    .tasa-card.gp { background: #f0fdf4; border-color: #059669; }
-    .tasa-label { font-size: 0.75rem; color: #6b7280; margin-bottom: 0.3rem; font-weight: 600; }
-    .tasa-value { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
-    .tasa-card.bcv .tasa-value { color: #1d4ed8; }
-    .tasa-card.binance .tasa-value { color: #b45309; }
-    .tasa-card.gp .tasa-value { color: #059669; }
-    .btn-edit { background: #f3f4f6; border: 1px solid #d1d5db; color: #374151; padding: 0.35rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
-    .btn-edit:hover { background: #e5e7eb; }
-    .btn-primary { background: #1a56db; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
-    .btn-primary:hover { background: #1e40af; }
-    .btn-secondary { background: #f3f4f6; color: #374151; border: none; padding: 0.5rem 0.9rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+    .section-title { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 0.8rem 0; color: #1a1410; border-bottom: 2px solid #d4af37; padding-bottom: 0.5rem; }
+    .card { background: white; border-radius: 8px; padding: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 1.5rem; border-left: 4px solid #d4af37; }
+    .btn-primary { background: #d4af37; color: #1a1410; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: all 0.2s; }
+    .btn-primary:hover { background: #e8c547; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3); }
+    .btn-secondary { background: #f5f3f0; color: #2d2416; border: 1px solid #d4af37; padding: 0.5rem 0.9rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+    .btn-secondary:hover { background: #e8e3dd; }
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin-bottom: 1.2rem; }
-    .stat-card { background: white; border-radius: 8px; padding: 0.9rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); text-align: center; }
+    .stat-card { background: white; border-radius: 8px; padding: 0.9rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); text-align: center; border-top: 3px solid #d4af37; }
     .stat-icon { font-size: 1.3rem; margin-bottom: 0.2rem; }
     .stat-label { font-size: 0.7rem; color: #6b7280; margin-bottom: 0.2rem; }
-    .stat-value { font-size: 1rem; font-weight: 800; color: #059669; }
-    .table-wrapper { overflow-x: auto; max-height: 500px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; }
+    .stat-value { font-size: 1rem; font-weight: 800; color: #d4af37; }
+    .table-wrapper { overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #d4af37; border-radius: 8px; }
     table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    th { background: #f3f4f6; padding: 0.7rem; text-align: left; font-weight: 700; color: #374151; border-bottom: 2px solid #e5e7eb; position: sticky; top: 0; }
-    td { padding: 0.7rem; border-bottom: 1px solid #f3f4f6; }
-    tr:hover { background: #f9fafb; }
-    .gp-cell { color: #0e9f6e; font-weight: 700; cursor: pointer; padding: 0.3rem 0.5rem; border-radius: 4px; }
-    .gp-cell:hover { background: #f0fdf4; }
+    th { background: linear-gradient(135deg, #2d2416 0%, #3d3428 100%); padding: 0.8rem; text-align: left; font-weight: 700; color: #d4af37; border-bottom: 2px solid #d4af37; position: sticky; top: 0; }
+    td { padding: 0.7rem; border-bottom: 1px solid #e8e3dd; }
+    tr:hover { background: #f9f7f4; }
+    .gp-cell { color: #d4af37; font-weight: 700; cursor: pointer; padding: 0.3rem 0.5rem; border-radius: 4px; }
+    .gp-cell:hover { background: rgba(212, 175, 55, 0.1); }
     .btn-delete { background: #fee2e2; color: #991b1b; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
     .btn-delete:hover { background: #fecaca; }
     .pagination { display: flex; gap: 0.5rem; align-items: center; justify-content: center; margin-top: 1rem; }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
     .modal.active { display: flex; }
-    .modal-content { background: white; border-radius: 10px; padding: 1.5rem; max-width: 420px; width: 90%; max-height: 90vh; overflow-y: auto; }
-    .modal-content h2 { margin-bottom: 1rem; font-size: 1.1rem; }
-    .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 0.6rem; margin-bottom: 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.9rem; }
+    .modal-content { background: white; border-radius: 10px; padding: 1.5rem; max-width: 420px; width: 90%; max-height: 90vh; overflow-y: auto; border-left: 4px solid #d4af37; }
+    .modal-content h2 { margin-bottom: 1rem; font-size: 1.1rem; color: #1a1410; }
+    .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 0.6rem; margin-bottom: 0.8rem; border: 1px solid #d4af37; border-radius: 6px; font-size: 0.9rem; }
     .modal-buttons { display: flex; gap: 0.8rem; }
     .modal-buttons button { flex: 1; padding: 0.6rem; }
     .chart-container { position: relative; height: 280px; margin-top: 1rem; }
-    .objetivo-item { background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 0.8rem; }
+    .objetivo-item { background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 0.8rem; border-left: 4px solid #d4af37; }
     .objetivo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-    .objetivo-name { font-weight: 700; }
-    .progress-bar { background: #e5e7eb; height: 8px; border-radius: 999px; overflow: hidden; margin-bottom: 0.5rem; }
-    .progress-fill { background: linear-gradient(90deg, #a855f7, #ec4899); height: 100%; border-radius: 999px; }
+    .objetivo-name { font-weight: 700; color: #1a1410; }
+    .progress-bar { background: #e8e3dd; height: 8px; border-radius: 999px; overflow: hidden; margin-bottom: 0.5rem; }
+    .progress-fill { background: linear-gradient(90deg, #d4af37, #e8c547); height: 100%; border-radius: 999px; }
     .objetivo-values { display: flex; justify-content: space-between; font-size: 0.8rem; }
-    .membresia-card { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 10px; padding: 1.2rem; color: white; }
-    .membresia-label { font-size: 0.8rem; opacity: 0.9; margin-bottom: 0.3rem; }
+    .membresia-card { background: linear-gradient(135deg, #d4af37 0%, #e8c547 100%); border-radius: 8px; padding: 1.2rem; color: #1a1410; }
+    .membresia-label { font-size: 0.8rem; opacity: 0.8; margin-bottom: 0.3rem; font-weight: 700; }
     .membresia-value { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem; }
-    .membresia-info { font-size: 0.75rem; opacity: 0.85; }
     .membresia-warning { background: #fee2e2; color: #991b1b; border-radius: 6px; padding: 0.6rem; margin-top: 0.8rem; font-size: 0.8rem; font-weight: 600; }
-    .bank-desglose { background: #f9fafb; border-radius: 8px; padding: 1rem; margin-top: 0.8rem; }
-    .bank-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
-    .bank-label { color: #6b7280; }
-    .bank-value { font-weight: 700; }
-    footer { background: #1f2937; color: white; text-align: center; padding: 1rem; margin-top: 2rem; font-size: 0.8rem; }
+    footer { background: #1a1410; color: #d4af37; text-align: center; padding: 1rem; margin-top: 2rem; font-size: 0.8rem; border-top: 2px solid #d4af37; }
+    .editable-title { position: relative; display: inline-block; }
+    .editable-title:hover { opacity: 0.8; }
     @media (max-width: 768px) {
       .header { padding: 1rem; }
       .header h1 { font-size: 1.4rem; }
       .container { padding: 0.8rem; }
-      .tasas-grid { grid-template-columns: 1fr; }
+      .header-info { grid-template-columns: 1fr; }
+      .header-tasas { grid-template-columns: repeat(3, 1fr); }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .table-wrapper { max-height: 400px; }
     }
@@ -87,8 +79,10 @@
 <body>
 
 <div class="header">
-  <h1>🎮 OSRS Tracker</h1>
-  <p>Seguimiento integral de farmeo, objetivos y metas</p>
+  <div class="header-top">
+    <h1 class="editable-title" id="projectTitle" onclick="abrirModalTitulo()">Proyecto Moto/PC</h1>
+    <div class="header-tasas" id="headerTasas"></div>
+  </div>
   <div class="header-info">
     <div class="info-card">
       <div class="info-label">📅 Inicio</div>
@@ -98,7 +92,7 @@
       <div class="info-label">📍 Ubicación</div>
       <div class="info-value">Maturín, VE</div>
     </div>
-    <div class="info-card" onclick="abrirModalBank()">
+    <div class="info-card" onclick="abrirModalBank()" style="cursor: pointer;">
       <div class="info-label">💰 Bank Actual</div>
       <div class="info-value" id="bankGP">44.5 m</div>
       <div class="info-sub" id="bankResumen">0 Bs • $0 BCV • $0 Binance</div>
@@ -107,26 +101,6 @@
 </div>
 
 <div class="container">
-
-  <!-- TASAS -->
-  <div class="section-title">💰 Tasas de Cambio</div>
-  <div class="tasas-grid">
-    <div class="tasa-card bcv">
-      <div class="tasa-label">BCV (USD/VES)</div>
-      <div class="tasa-value" id="tasaBCVVal">402.33</div>
-      <div style="font-size: 0.7rem; color: #6b7280;">Oficial • 20 Feb</div>
-    </div>
-    <div class="tasa-card binance">
-      <div class="tasa-label">Binance P2P (USD/VES)</div>
-      <div class="tasa-value" id="tasaBinanceVal">583.00</div>
-      <div style="font-size: 0.7rem; color: #6b7280;">Promedio • 20 Feb</div>
-    </div>
-    <div class="tasa-card gp">
-      <div class="tasa-label">GP/USD</div>
-      <div class="tasa-value" id="tasaGPVal">0.0002</div>
-      <button class="btn-edit" onclick="abrirModalTasaGP()">Editar</button>
-    </div>
-  </div>
 
   <!-- PAGOS DEL CURSO -->
   <div class="section-title">💸 Pagos del Curso</div>
@@ -160,7 +134,7 @@
     <div class="membresia-card">
       <div class="membresia-label">Días Restantes</div>
       <div class="membresia-value" id="diasRestantes">8</div>
-      <div class="membresia-info">
+      <div style="font-size: 0.75rem; opacity: 0.8;">
         <div>Comprada: 15 Feb 2026</div>
         <div>Vencimiento: 28 Feb 2026</div>
         <div style="margin-top: 0.3rem;">Precio: $10.99 (5,930 Bs)</div>
@@ -175,9 +149,9 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
       <button class="btn-primary" onclick="abrirModalFarmeo()">➕ Añadir Día</button>
       <div class="pagination">
-        <button class="btn-secondary" onclick="paginaAnterior()">←</button>
-        <span style="font-weight: 600; min-width: 40px; text-align: center;" id="paginaInfo">1/1</span>
-        <button class="btn-secondary" onclick="paginaSiguiente()">→</button>
+        <button class="btn-secondary" onclick="paginaAnterior()">← Anterior</button>
+        <span style="font-weight: 600; min-width: 50px; text-align: center;" id="paginaInfo">1/1</span>
+        <button class="btn-secondary" onclick="paginaSiguiente()">Siguiente →</button>
       </div>
     </div>
     <div class="table-wrapper">
@@ -240,6 +214,17 @@
 </div>
 
 <!-- MODALES -->
+<div id="modalTitulo" class="modal">
+  <div class="modal-content">
+    <h2>Editar Nombre del Proyecto</h2>
+    <input type="text" id="inputTitulo" placeholder="Nombre del proyecto" />
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="cerrarModalTitulo()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarTitulo()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <div id="modalFarmeo" class="modal">
   <div class="modal-content">
     <h2>➕ Añadir Día de Farmeo</h2>
@@ -280,17 +265,6 @@
   </div>
 </div>
 
-<div id="modalTasaGP" class="modal">
-  <div class="modal-content">
-    <h2>Editar Tasa GP/USD</h2>
-    <input type="number" id="inputTasaGP" step="0.00001" />
-    <div class="modal-buttons">
-      <button class="btn-secondary" onclick="cerrarModalTasaGP()">Cancelar</button>
-      <button class="btn-primary" onclick="guardarTasaGP()">Guardar</button>
-    </div>
-  </div>
-</div>
-
 <div id="modalBank" class="modal">
   <div class="modal-content">
     <h2>Editar Bank Actual</h2>
@@ -303,12 +277,13 @@
 </div>
 
 <footer>
-  <p>🎮 OSRS Tracker v1.0 • Última actualización: 20 de febrero de 2026</p>
+  <p>⚔️ OSRS Tracker v2.0 • Proyecto Moto/PC • Última actualización: 20 de febrero de 2026</p>
 </footer>
 
 <script>
   let state = {
-    nextId: 11,
+    projectName: "Proyecto Moto/PC",
+    nextId: 12,
     farmeo: [],
     objetivos: [],
     tasaGP: 0.0002,
@@ -323,41 +298,42 @@
   let tasaBinanceActual = 583;
   let chartFarmeo = null;
   let paginaActualFarmeo = 1;
-  const diasPorPagina = 10;
+  const diasPorPagina = 31;
   let mesActualGrafica = new Date();
   let editandoFarmeoId = null;
 
   const preciosPurples = {
-    'scythe': 1600,
-    'sang': 19.6,
-    'justiciar_face': 0.18,
-    'justiciar_body': 0.25,
-    'justiciar_legs': 0.22,
-    'ghrazi': 31,
-    'avernic': 0.09
+    'scythe': 1600, 'sang': 19.6, 'justiciar_face': 0.18, 'justiciar_body': 0.25,
+    'justiciar_legs': 0.22, 'ghrazi': 31, 'avernic': 0.09
   };
+
+  // GUARDAR DATOS EN LOCALSTORAGE
+  function guardarDatos() {
+    localStorage.setItem('osrs_tracker_state', JSON.stringify(state));
+    console.log("✅ Datos guardados en localStorage");
+  }
 
   // CARGAR DATOS
   async function cargarDatos() {
-    try {
-      const response = await fetch("data.json?t=" + Date.now());
-      if (response.ok) {
-        const data = await response.json();
-        state = data;
-        tasaBCVActual = state.tasaBCV;
-        tasaBinanceActual = state.tasaBinance;
-        console.log("✅ Datos cargados correctamente");
-        return true;
+    const saved = localStorage.getItem('osrs_tracker_state');
+    if (saved) {
+      state = JSON.parse(saved);
+      console.log("✅ Datos cargados desde localStorage");
+    } else {
+      try {
+        const response = await fetch("data.json?t=" + Date.now());
+        if (response.ok) {
+          const data = await response.json();
+          state = data;
+          guardarDatos();
+          console.log("✅ Datos cargados desde data.json");
+        }
+      } catch (e) {
+        console.error("❌ Error cargando datos:", e);
       }
-    } catch (e) {
-      console.error("❌ Error cargando datos:", e);
     }
-    return false;
-  }
-
-  function guardarDatos() {
-    console.log("💾 Datos guardados localmente (Manus sincronizará con GitHub)");
-    localStorage.setItem('osrs_tracker_backup', JSON.stringify(state));
+    tasaBCVActual = state.tasaBCV;
+    tasaBinanceActual = state.tasaBinance;
   }
 
   function formatFecha(f) {
@@ -368,42 +344,31 @@
   function actualizarTotales() {
     let totalGP = 0;
     state.farmeo.forEach(d => totalGP += d.gp);
-    
     const promedio = state.farmeo.length > 0 ? totalGP / state.farmeo.length : 0;
     const usd = totalGP * state.tasaGP;
-    
     document.getElementById('totalGenerado').textContent = totalGP.toFixed(1) + ' m';
     document.getElementById('promedioDiario').textContent = promedio.toFixed(1) + ' m';
     document.getElementById('totalDias').textContent = state.farmeo.length;
     document.getElementById('valorBank').textContent = '$' + usd.toFixed(2);
   }
 
-  // TASAS
-  function renderTasas() {
-    document.getElementById('tasaBCVVal').textContent = tasaBCVActual.toFixed(2);
-    document.getElementById('tasaBinanceVal').textContent = tasaBinanceActual.toFixed(2);
-    document.getElementById('tasaGPVal').textContent = state.tasaGP.toFixed(5);
-  }
-
-  function abrirModalTasaGP() {
-    document.getElementById('inputTasaGP').value = state.tasaGP;
-    document.getElementById('modalTasaGP').classList.add('active');
-  }
-
-  function cerrarModalTasaGP() {
-    document.getElementById('modalTasaGP').classList.remove('active');
-  }
-
-  function guardarTasaGP() {
-    const val = parseFloat(document.getElementById('inputTasaGP').value);
-    if (!isNaN(val) && val > 0) {
-      state.tasaGP = val;
-      guardarDatos();
-      renderTasas();
-      renderBank();
-      actualizarTotales();
-      cerrarModalTasaGP();
-    }
+  // TASAS EN HEADER
+  function renderHeaderTasas() {
+    const html = `
+      <div class="tasa-mini">
+        <div class="tasa-mini-label">BCV</div>
+        <div class="tasa-mini-value">${tasaBCVActual.toFixed(2)}</div>
+      </div>
+      <div class="tasa-mini">
+        <div class="tasa-mini-label">Binance P2P</div>
+        <div class="tasa-mini-value">${tasaBinanceActual.toFixed(2)}</div>
+      </div>
+      <div class="tasa-mini">
+        <div class="tasa-mini-label">GP/USD</div>
+        <div class="tasa-mini-value">${state.tasaGP.toFixed(5)}</div>
+      </div>
+    `;
+    document.getElementById('headerTasas').innerHTML = html;
   }
 
   // BANK
@@ -412,11 +377,8 @@
     const usd_bcv = state.bankActualGP * state.tasaGP;
     const usd_binance = state.bankActualGP * state.tasaGP;
     const bs = usd_bcv * tasaBCVActual;
-    const usd_bcv_final = usd_bcv;
-    const usd_binance_final = usd_binance;
-    
     document.getElementById('bankResumen').textContent = 
-      bs.toFixed(0) + ' Bs • $' + usd_bcv_final.toFixed(2) + ' BCV • $' + usd_binance_final.toFixed(2) + ' Binance';
+      bs.toFixed(0) + ' Bs • $' + usd_bcv.toFixed(2) + ' BCV • $' + usd_binance.toFixed(2) + ' Binance';
   }
 
   function abrirModalBank() {
@@ -436,6 +398,26 @@
       renderBank();
       actualizarTotales();
       cerrarModalBank();
+    }
+  }
+
+  // TÍTULO DEL PROYECTO
+  function abrirModalTitulo() {
+    document.getElementById('inputTitulo').value = state.projectName;
+    document.getElementById('modalTitulo').classList.add('active');
+  }
+
+  function cerrarModalTitulo() {
+    document.getElementById('modalTitulo').classList.remove('active');
+  }
+
+  function guardarTitulo() {
+    const val = document.getElementById('inputTitulo').value.trim();
+    if (val) {
+      state.projectName = val;
+      document.getElementById('projectTitle').textContent = val;
+      guardarDatos();
+      cerrarModalTitulo();
     }
   }
 
@@ -491,7 +473,6 @@
   function abrirModalEditarFarmeo(id) {
     const dia = state.farmeo.find(d => d.id === id);
     if (!dia) return;
-    
     editandoFarmeoId = id;
     document.getElementById('editFarmeoFecha').value = dia.fecha;
     document.getElementById('editFarmeoGP').value = dia.gp;
@@ -507,7 +488,6 @@
 
   function guardarEditarFarmeo() {
     if (!editandoFarmeoId) return;
-    
     const dia = state.farmeo.find(d => d.id === editandoFarmeoId);
     if (!dia) return;
 
@@ -596,16 +576,16 @@
         datasets: [{
           label: 'GP Farmeado',
           data: datos,
-          backgroundColor: '#0e9f6e',
-          borderColor: '#059669',
-          borderWidth: 1
+          backgroundColor: '#d4af37',
+          borderColor: '#e8c547',
+          borderWidth: 2
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: true } },
-        scales: { y: { beginAtZero: true } }
+        plugins: { legend: { display: true, labels: { color: '#2d2416' } } },
+        scales: { y: { beginAtZero: true, ticks: { color: '#2d2416' }, grid: { color: '#e8e3dd' } }, x: { ticks: { color: '#2d2416' }, grid: { color: '#e8e3dd' } } }
       }
     });
 
@@ -628,22 +608,42 @@
     const grid = document.getElementById('metasGrid');
     grid.innerHTML = '';
     state.objetivos.forEach(obj => {
-      const pct = Math.min((obj.actual / obj.meta) * 100, 100);
+      let metaGP = obj.meta;
+      if (obj.tipo === 'moto' || obj.tipo === 'pc') {
+        metaGP = (obj.metaUSD / state.tasaGP) / tasaBinanceActual;
+      }
+      const pct = Math.min((obj.actual / metaGP) * 100, 100);
       const div = document.createElement('div');
       div.className = 'objetivo-item';
-      div.innerHTML = `
+      let html = `
         <div class="objetivo-header">
           <span class="objetivo-name">${obj.nombre}</span>
         </div>
         <div class="progress-bar">
           <div class="progress-fill" style="width: ${pct}%"></div>
         </div>
-        <div class="objetivo-values">
-          <span>Actual: <strong contenteditable="true" onblur="editarActualMeta(${obj.id}, this.textContent)">${obj.actual.toFixed(2)}</strong> ${obj.tipo === 'moto' ? '$' : '$'}</span>
-          <span>Meta: <strong>${obj.meta.toFixed(2)}</strong> ${obj.tipo === 'moto' ? '$' : '$'}</span>
-        </div>
-        <div style="font-size: 0.75rem; color: #6b7280;">📅 ${obj.plazo}</div>
       `;
+      
+      if (obj.tipo === 'lms') {
+        html += `
+          <div class="objetivo-values">
+            <span>Actual: <strong>${obj.actual}</strong> pts</span>
+            <span>Meta: <strong>${obj.meta}</strong> pts</span>
+          </div>
+          <div style="font-size: 0.75rem; color: #6b7280;">📅 ${obj.plazo}</div>
+          <div style="font-size: 0.7rem; color: #6b7280; margin-top: 0.3rem;">D6: ${obj.detalles.dia6} | D7: ${obj.detalles.dia7} | D8: ${obj.detalles.dia8} | D9: ${obj.detalles.dia9}</div>
+        `;
+      } else {
+        html += `
+          <div class="objetivo-values">
+            <span>Actual: <strong contenteditable="true" onblur="editarActualMeta(${obj.id}, this.textContent)">${obj.actual.toFixed(2)}</strong> m</span>
+            <span>Meta: <strong>${metaGP.toFixed(2)}</strong> m</span>
+          </div>
+          <div style="font-size: 0.75rem; color: #6b7280;">📅 ${obj.plazo}</div>
+        `;
+      }
+      
+      div.innerHTML = html;
       grid.appendChild(div);
     });
   }
@@ -692,9 +692,9 @@
       tr.innerHTML = `
         <td>${pago.mes}</td>
         <td>${formatFecha(pago.fechaLimite)}</td>
-        <td style="color: #0e9f6e; font-weight: 700;">$${monto.toFixed(2)}</td>
+        <td style="color: #d4af37; font-weight: 700;">$${monto.toFixed(2)}</td>
         <td>${(monto * tasaBCVActual).toFixed(0)} Bs</td>
-        <td><button class="btn-edit" onclick="toggleEstadoPago(${pago.id})" style="background: ${color}; color: ${textColor}; border: none; padding: 0.3rem 0.6rem;">${estado}</button></td>
+        <td><button class="btn-secondary" onclick="toggleEstadoPago(${pago.id})" style="background: ${color}; color: ${textColor}; border: none; padding: 0.3rem 0.6rem;">${estado}</button></td>
       `;
       tbody.appendChild(tr);
     });
@@ -716,15 +716,12 @@
   // MEMBRESÍA
   function renderMembresia() {
     if (!state.membresia.fechaCompra) return;
-
     const fechaVencimiento = new Date(state.membresia.fechaVencimiento + 'T00:00:00Z');
     const hoy = new Date();
-    
     let diasRestantes = Math.ceil((fechaVencimiento - hoy) / (1000 * 60 * 60 * 24));
     if (diasRestantes < 0) diasRestantes = 0;
 
     document.getElementById('diasRestantes').textContent = diasRestantes;
-
     const warning = document.getElementById('membresia-warning');
     if (diasRestantes <= 7) {
       warning.style.display = 'block';
@@ -736,18 +733,14 @@
 
   // INICIALIZAR
   async function init() {
-    const cargado = await cargarDatos();
-    if (!cargado) {
-      console.warn("⚠️ No se pudo cargar data.json, usando backup local");
-      const backup = localStorage.getItem('osrs_tracker_backup');
-      if (backup) state = JSON.parse(backup);
-    }
-    renderTasas();
+    await cargarDatos();
+    renderHeaderTasas();
     renderBank();
     renderFarmeo();
     renderMetas();
     renderPagos();
     renderMembresia();
+    document.getElementById('projectTitle').textContent = state.projectName;
     console.log("✅ Aplicación inicializada");
   }
 

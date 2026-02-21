@@ -1,5 +1,6 @@
 {
-  "nextId": 11,
+  "projectName": "Proyecto Moto/PC",
+  "nextId": 12,
   "farmeo": [
     {"id": 1, "fecha": "2026-02-11", "gp": 30.8, "tob": 5, "notas": "Primer día completado"},
     {"id": 2, "fecha": "2026-02-12", "gp": 32.6, "tob": 5, "notas": "Meta superada"},
@@ -13,8 +14,9 @@
     {"id": 10, "fecha": "2026-02-20", "gp": -1.6, "tob": 0, "notas": "Empezó ~12:13 – +2,3 m farmed – perdí 3,9 m por PK"}
   ],
   "objetivos": [
-    {"id": 1, "nombre": "Moto (800$ BCV)", "meta": 800, "actual": 0, "plazo": "Meta 1", "tipo": "moto"},
-    {"id": 2, "nombre": "Computadora PC (630$ BCV)", "meta": 630, "actual": 0, "plazo": "Meta 2", "tipo": "pc"}
+    {"id": 1, "nombre": "Completar LMS", "meta": 500, "actual": 500, "plazo": "✅ Completado 19-feb", "tipo": "lms", "detalles": {"dia6": 107, "dia7": 136, "dia8": 160, "dia9": 97}},
+    {"id": 2, "nombre": "Moto (800$ BCV)", "metaUSD": 800, "actual": 0, "plazo": "Meta 1", "tipo": "moto"},
+    {"id": 3, "nombre": "PC (630$ BCV)", "metaUSD": 630, "actual": 0, "plazo": "Meta 2", "tipo": "pc"}
   ],
   "tasaGP": 0.0002,
   "tasaBCV": 402.3343,
@@ -26,14 +28,6 @@
     {"id": 3, "mes": "Mayo", "fechaLimite": "2026-05-10", "monto": 20, "estado": "Pendiente"},
     {"id": 4, "mes": "Junio", "fechaLimite": "2026-06-10", "monto": 20, "estado": "Pendiente"}
   ],
-  "componentes": [
-    {"id": 1, "nombre": "CPU AMD Ryzen 5 7600X", "precioUSD": 253, "precioBS": 136620},
-    {"id": 2, "nombre": "Motherboard ASUS TUF B650-Plus WiFi", "precioUSD": 323, "precioBS": 174420},
-    {"id": 3, "nombre": "Cooler DeepCool AK400", "precioUSD": 31, "precioBS": 16740},
-    {"id": 4, "nombre": "Envío", "precioUSD": 23, "precioBS": 12420}
-  ],
-  "totalComponentesUSD": 630,
-  "totalComponentesBS": 340200,
   "membresia": {
     "fechaCompra": "2026-02-15",
     "diasDuracion": 14,
