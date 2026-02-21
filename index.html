@@ -402,11 +402,16 @@
   // ACTUALIZAR HORA EN TIEMPO REAL
   function actualizarHora() {
     const ahora = new Date();
-    const horas = String(ahora.getHours()).padStart(2, '0');
+    let horas = ahora.getHours();
     const minutos = String(ahora.getMinutes()).padStart(2, '0');
     const segundos = String(ahora.getSeconds()).padStart(2, '0');
+    const ampm = horas >= 12 ? 'PM' : 'AM';
+    horas = horas % 12;
+    horas = horas ? horas : 12;
+    const horasStr = String(horas).padStart(2, '0');
+    const horaFormato = `${horasStr}:${minutos}:${segundos} ${ampm}`;
     document.querySelectorAll('.tasa-mini-hora').forEach(el => {
-      el.textContent = `${horas}:${minutos}:${segundos}`;
+      el.textContent = horaFormato;
     });
   }
 
@@ -415,13 +420,17 @@
     return `${day}/${month}/${year}`;
   }
 
+  function formatGP(num) {
+    return num.toLocaleString('es-VE', {maximumFractionDigits: 1});
+  }
+
   function actualizarTotales() {
     let totalGP = 0;
     state.farmeo.forEach(d => totalGP += d.gp);
     const promedio = state.farmeo.length > 0 ? totalGP / state.farmeo.length : 0;
     const usd = totalGP * state.tasaGP;
-    document.getElementById('totalGenerado').textContent = totalGP.toFixed(1) + ' m';
-    document.getElementById('promedioDiario').textContent = promedio.toFixed(1) + ' m';
+    document.getElementById('totalGenerado').textContent = formatGP(totalGP) + ' m';
+    document.getElementById('promedioDiario').textContent = formatGP(promedio) + ' m';
     document.getElementById('totalDias').textContent = state.farmeo.length;
     document.getElementById('valorBank').textContent = '$' + usd.toFixed(2);
   }
@@ -432,17 +441,17 @@
       <div class="tasa-mini" onclick="abrirModalTasaGP()" style="cursor: pointer;">
         <div class="tasa-mini-label">BCV</div>
         <div class="tasa-mini-value">${tasaBCVActual.toFixed(2)}</div>
-        <div class="tasa-mini-hora">--:--:--</div>
+        <div class="tasa-mini-hora" id="hora-display">--:--:-- AM</div>
       </div>
       <div class="tasa-mini">
         <div class="tasa-mini-label">Binance P2P</div>
         <div class="tasa-mini-value">${tasaBinanceActual.toFixed(2)}</div>
-        <div class="tasa-mini-hora">--:--:--</div>
+        <div class="tasa-mini-hora">--:--:-- AM</div>
       </div>
       <div class="tasa-mini" onclick="abrirModalTasaGP()" style="cursor: pointer;">
         <div class="tasa-mini-label">GP/USD</div>
         <div class="tasa-mini-value">${state.tasaGP.toFixed(5)}</div>
-        <div class="tasa-mini-hora">--:--:--</div>
+        <div class="tasa-mini-hora">--:--:-- AM</div>
       </div>
     `;
     document.getElementById('headerTasas').innerHTML = html;
@@ -451,13 +460,13 @@
 
   // BANK
   function renderBank() {
-    document.getElementById('bankGP').textContent = state.bankActualGP.toFixed(1) + ' m';
-    const usd_bcv = state.bankActualGP * state.tasaGP;
+    document.getElementById('bankGP').textContent = state.bankActualGP.toLocaleString('es-VE', {maximumFractionDigits: 1}) + ' m';
     const usd_binance = state.bankActualGP * state.tasaGP;
-    const bs_bcv = usd_bcv * tasaBCVActual;
     const bs_binance = usd_binance * tasaBinanceActual;
+    const usd_bcv = state.bankActualGP * state.tasaGP;
+    const bs_bcv = usd_bcv * tasaBCVActual;
     document.getElementById('bankResumen').textContent = 
-      bs_bcv.toFixed(0) + ' Bs (BCV) • $' + usd_bcv.toFixed(2) + ' BCV • $' + usd_binance.toFixed(2) + ' Binance';
+      bs_binance.toLocaleString('es-VE', {maximumFractionDigits: 0}) + ' Bs (Binance) • $' + usd_binance.toFixed(2) + ' Binance • $' + usd_bcv.toFixed(2) + ' BCV';
   }
 
   function abrirModalBank() {
@@ -620,7 +629,7 @@
       tr.innerHTML = `
         <td>${idx}</td>
         <td>${formatFecha(dia.fecha)}</td>
-        <td class="gp-cell" onclick="abrirModalEditarFarmeo(${dia.id})">${dia.gp.toFixed(1)} / 15-20m</td>
+        <td class="gp-cell" onclick="abrirModalEditarFarmeo(${dia.id})">${formatGP(dia.gp)} / 15-20m</td>
         <td>${dia.tob || 0} / 5</td>
         <td>${dia.notas.includes('[') ? '💎' : '—'}</td>
         <td title="${dia.notas}" style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${dia.notas}</td>
@@ -745,8 +754,8 @@
       } else {
         html += `
           <div class="objetivo-values">
-            <span>Actual: <strong contenteditable="true" onblur="editarActualMeta(${obj.id}, this.textContent)">${obj.actual.toFixed(2)}</strong> m</span>
-            <span>Meta: <strong>${metaGP.toFixed(2)}</strong> m</span>
+            <span>Actual: <strong contenteditable="true" onblur="editarActualMeta(${obj.id}, this.textContent)">${formatGP(obj.actual)}</strong> m</span>
+            <span>Meta: <strong>${formatGP(metaGP)}</strong> m</span>
           </div>
           <div style="font-size: 0.75rem; color: #6b7280;">📅 ${obj.plazo}</div>
         `;
@@ -934,15 +943,24 @@
     document.getElementById('searchResults').innerHTML = '<p style="text-align: center;">🔍 Buscando items...</p>';
 
     try {
-      const response = await fetch(`https://prices.runescape.wiki/api/v1/osrs/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch('https://prices.runescape.wiki/api/v1/osrs/latest');
       const data = await response.json();
       
-      if (!data.data || data.data.length === 0) {
+      if (!data.data) {
         document.getElementById('searchResults').innerHTML = '<p style="text-align: center;">❌ No se encontraron items</p>';
         return;
       }
 
-      const html = data.data.slice(0, 12).map(item => {
+      const filtered = Object.entries(data.data).filter(([id, item]) => 
+        item.name && item.name.toLowerCase().includes(query.toLowerCase())
+      ).slice(0, 12);
+
+      if (filtered.length === 0) {
+        document.getElementById('searchResults').innerHTML = '<p style="text-align: center;">❌ No se encontraron items con ese nombre</p>';
+        return;
+      }
+
+      const html = filtered.map(([id, item]) => {
         const precioUSD = (item.price || 0) * state.tasaGP;
         const margen = item.buy_price && item.sell_price ? 
           (((item.sell_price - item.buy_price) / item.buy_price) * 100).toFixed(1) : 'N/A';
