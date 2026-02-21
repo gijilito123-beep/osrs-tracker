@@ -276,6 +276,18 @@
   </div>
 </div>
 
+<div id="modalTasaGP" class="modal">
+  <div class="modal-content">
+    <h2>Editar Tasa GP/USD (Binance)</h2>
+    <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Esta es la tasa de conversión de GP a USD en Binance. Ajústala según el mercado actual.</p>
+    <input type="number" id="inputTasaGP" placeholder="Tasa GP/USD" step="0.00001" />
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="cerrarModalTasaGP()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarTasaGP()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <footer>
   <p>⚔️ OSRS Tracker v2.0 • Proyecto Moto/PC • Última actualización: 20 de febrero de 2026</p>
 </footer>
@@ -363,7 +375,7 @@
         <div class="tasa-mini-label">Binance P2P</div>
         <div class="tasa-mini-value">${tasaBinanceActual.toFixed(2)}</div>
       </div>
-      <div class="tasa-mini">
+      <div class="tasa-mini" onclick="abrirModalTasaGP()" style="cursor: pointer;">
         <div class="tasa-mini-label">GP/USD</div>
         <div class="tasa-mini-value">${state.tasaGP.toFixed(5)}</div>
       </div>
@@ -398,6 +410,32 @@
       renderBank();
       actualizarTotales();
       cerrarModalBank();
+    }
+  }
+
+  // TASA DE GP
+  function abrirModalTasaGP() {
+    document.getElementById('inputTasaGP').value = state.tasaGP;
+    document.getElementById('modalTasaGP').classList.add('active');
+  }
+
+  function cerrarModalTasaGP() {
+    document.getElementById('modalTasaGP').classList.remove('active');
+  }
+
+  function guardarTasaGP() {
+    const val = parseFloat(document.getElementById('inputTasaGP').value);
+    if (!isNaN(val) && val > 0) {
+      state.tasaGP = val;
+      guardarDatos();
+      renderHeaderTasas();
+      renderBank();
+      actualizarTotales();
+      renderMetas();
+      cerrarModalTasaGP();
+      console.log('✅ Tasa GP actualizada a:', val);
+    } else {
+      alert('Por favor ingresa un valor válido mayor a 0');
     }
   }
 
