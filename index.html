@@ -29,7 +29,6 @@
     .tasa-card.bcv .tasa-value { color: #1d4ed8; }
     .tasa-card.binance .tasa-value { color: #b45309; }
     .tasa-card.gp .tasa-value { color: #059669; }
-    .tasa-info { font-size: 0.7rem; color: #6b7280; }
     .btn-edit { background: #f3f4f6; border: 1px solid #d1d5db; color: #374151; padding: 0.35rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
     .btn-edit:hover { background: #e5e7eb; }
     .btn-primary { background: #1a56db; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
@@ -45,7 +44,7 @@
     th { background: #f3f4f6; padding: 0.7rem; text-align: left; font-weight: 700; color: #374151; border-bottom: 2px solid #e5e7eb; position: sticky; top: 0; }
     td { padding: 0.7rem; border-bottom: 1px solid #f3f4f6; }
     tr:hover { background: #f9fafb; }
-    .gp-cell { color: #0e9f6e; font-weight: 700; cursor: pointer; }
+    .gp-cell { color: #0e9f6e; font-weight: 700; cursor: pointer; padding: 0.3rem 0.5rem; border-radius: 4px; }
     .gp-cell:hover { background: #f0fdf4; }
     .btn-delete { background: #fee2e2; color: #991b1b; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
     .btn-delete:hover { background: #fecaca; }
@@ -64,6 +63,16 @@
     .progress-bar { background: #e5e7eb; height: 6px; border-radius: 999px; overflow: hidden; margin-bottom: 0.5rem; }
     .progress-fill { background: linear-gradient(90deg, #a855f7, #ec4899); height: 100%; border-radius: 999px; }
     .objetivo-values { display: flex; justify-content: space-between; font-size: 0.8rem; }
+    .componente-item { background: #f9fafb; border-radius: 8px; padding: 0.8rem; margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: center; }
+    .componente-nombre { font-weight: 600; font-size: 0.9rem; }
+    .componente-precio { text-align: right; }
+    .componente-usd { color: #0e9f6e; font-weight: 700; }
+    .componente-bs { font-size: 0.8rem; color: #6b7280; }
+    .membresia-card { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 10px; padding: 1.2rem; color: white; }
+    .membresia-label { font-size: 0.8rem; opacity: 0.9; margin-bottom: 0.3rem; }
+    .membresia-value { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .membresia-info { font-size: 0.75rem; opacity: 0.85; }
+    .membresia-warning { background: #fee2e2; color: #991b1b; border-radius: 6px; padding: 0.6rem; margin-top: 0.8rem; font-size: 0.8rem; font-weight: 600; }
     footer { background: #1f2937; color: white; text-align: center; padding: 1rem; margin-top: 2rem; font-size: 0.8rem; }
     @media (max-width: 768px) {
       .header { padding: 1rem; }
@@ -79,7 +88,7 @@
 
 <div class="header">
   <h1>🎮 OSRS Tracker</h1>
-  <p>Seguimiento de farmeo y objetivos</p>
+  <p>Seguimiento integral de farmeo, objetivos y metas</p>
   <div class="header-info">
     <div class="info-card">
       <div class="info-label">📅 Inicio</div>
@@ -105,12 +114,12 @@
     <div class="tasa-card bcv">
       <div class="tasa-label">BCV (USD/VES)</div>
       <div class="tasa-value" id="tasaBCVVal">402.33</div>
-      <div class="tasa-info">Oficial • Actualizado</div>
+      <div style="font-size: 0.7rem; color: #6b7280;">Oficial • 20 Feb</div>
     </div>
     <div class="tasa-card binance">
       <div class="tasa-label">Binance P2P (USD/VES)</div>
       <div class="tasa-value" id="tasaBinanceVal">583.00</div>
-      <div class="tasa-info">Promedio • Actualizado</div>
+      <div style="font-size: 0.7rem; color: #6b7280;">Promedio • 20 Feb</div>
     </div>
     <div class="tasa-card gp">
       <div class="tasa-label">GP/USD</div>
@@ -119,28 +128,54 @@
     </div>
   </div>
 
-  <!-- STATS -->
-  <div class="section-title">📊 Análisis</div>
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon">📈</div>
-      <div class="stat-label">Promedio</div>
-      <div class="stat-value" id="promedioDiario">0 m</div>
+  <!-- PAGOS DEL CURSO -->
+  <div class="section-title">💸 Pagos del Curso</div>
+  <div class="card">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th>Límite</th>
+            <th>Monto</th>
+            <th>Bs</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="pagosBody">
+        </tbody>
+      </table>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon">📅</div>
-      <div class="stat-label">Total</div>
-      <div class="stat-value" id="totalGenerado">0 m</div>
+  </div>
+
+  <!-- COMPONENTES PC -->
+  <div class="section-title">🖥️ Componentes PC</div>
+  <div class="card">
+    <div id="componentesGrid"></div>
+    <div style="background: #f3f4f6; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+        <span style="font-weight: 700;">Total USD</span>
+        <span style="color: #0e9f6e; font-weight: 800;" id="totalComponentesUSD">$630</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="font-weight: 700;">Total Bs</span>
+        <span style="color: #1d4ed8; font-weight: 800;" id="totalComponentesBS">340,200 Bs</span>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon">⚡</div>
-      <div class="stat-label">Días</div>
-      <div class="stat-value" id="totalDias">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">💎</div>
-      <div class="stat-label">Bank USD</div>
-      <div class="stat-value" id="valorBank">$0</div>
+  </div>
+
+  <!-- MEMBRESÍA -->
+  <div class="section-title">🎫 Membresía OSRS</div>
+  <div class="card">
+    <div class="membresia-card">
+      <div class="membresia-label">Días Restantes</div>
+      <div class="membresia-value" id="diasRestantes">8</div>
+      <div class="membresia-info">
+        <div>Comprada: 15 Feb 2026</div>
+        <div>Vencimiento: 28 Feb 2026</div>
+        <div style="margin-top: 0.3rem;">Precio: $10.99 (5,930 Bs)</div>
+      </div>
+      <div class="membresia-warning" id="membresia-warning">⚠️ Renovar antes del 28 de febrero</div>
     </div>
   </div>
 
@@ -187,31 +222,36 @@
     </div>
   </div>
 
+  <!-- ANÁLISIS -->
+  <div class="section-title">📊 Análisis de Rendimiento</div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-label">Promedio</div>
+      <div class="stat-value" id="promedioDiario">0 m</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div class="stat-label">Total</div>
+      <div class="stat-value" id="totalGenerado">0 m</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-label">Días</div>
+      <div class="stat-value" id="totalDias">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💎</div>
+      <div class="stat-label">Bank USD</div>
+      <div class="stat-value" id="valorBank">$0</div>
+    </div>
+  </div>
+
   <!-- OBJETIVOS -->
   <div class="section-title">🎯 Objetivos</div>
   <div class="card">
     <button class="btn-primary" style="margin-bottom: 1rem;" onclick="abrirModalObjetivo()">➕ Nuevo</button>
     <div id="objetivosGrid"></div>
-  </div>
-
-  <!-- PAGOS -->
-  <div class="section-title">💸 Pagos del Curso</div>
-  <div class="card">
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Mes</th>
-            <th>Límite</th>
-            <th>Monto</th>
-            <th>Bs</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody id="pagosBody">
-        </tbody>
-      </table>
-    </div>
   </div>
 
 </div>
@@ -225,13 +265,13 @@
     <input type="number" id="farmeoToB" placeholder="ToB (cantidad)" step="1" />
     <select id="farmeoPurple" onchange="togglePurpleInput()">
       <option value="none">Sin Purple</option>
-      <option value="scythe">Scythe of Vitur</option>
-      <option value="sang">Sang Staff</option>
-      <option value="justiciar_face">Justiciar Faceguard</option>
-      <option value="justiciar_body">Justiciar Body</option>
-      <option value="justiciar_legs">Justiciar Legs</option>
-      <option value="ghrazi">Ghrazi Rapier</option>
-      <option value="avernic">Avernic Defender</option>
+      <option value="scythe">Scythe of Vitur (1600m)</option>
+      <option value="sang">Sang Staff (19.6m)</option>
+      <option value="justiciar_face">Justiciar Faceguard (180m)</option>
+      <option value="justiciar_body">Justiciar Body (250m)</option>
+      <option value="justiciar_legs">Justiciar Legs (220m)</option>
+      <option value="ghrazi">Ghrazi Rapier (31m)</option>
+      <option value="avernic">Avernic Defender (90m)</option>
       <option value="other">Otro (especificar GP)</option>
     </select>
     <input type="number" id="farmeoPurpleGP" placeholder="GP del Purple (millones)" step="0.1" style="display: none;" />
@@ -239,6 +279,20 @@
     <div class="modal-buttons">
       <button class="btn-secondary" onclick="cerrarModalFarmeo()">Cancelar</button>
       <button class="btn-primary" onclick="guardarFarmeo()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalEditarFarmeo" class="modal">
+  <div class="modal-content">
+    <h2>✏️ Editar Día de Farmeo</h2>
+    <input type="date" id="editFarmeoFecha" />
+    <input type="number" id="editFarmeoGP" placeholder="GP Farmeado (millones)" step="0.1" />
+    <input type="number" id="editFarmeoToB" placeholder="ToB (cantidad)" step="1" />
+    <textarea id="editFarmeoNotas" placeholder="Notas" rows="2"></textarea>
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="cerrarModalEditarFarmeo()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarEditarFarmeo()">Guardar Cambios</button>
     </div>
   </div>
 </div>
@@ -279,19 +333,21 @@
 </div>
 
 <footer>
-  <p id="footerDate">Última actualización: 20 de febrero de 2026</p>
+  <p>🎮 OSRS Tracker v1.0 • Última actualización: 20 de febrero de 2026</p>
 </footer>
 
 <script>
   let state = {
-    nextId: 1,
+    nextId: 11,
     farmeo: [],
     objetivos: [],
     tasaGP: 0.0002,
     tasaBCV: 402.3343,
     tasaBinance: 583,
     bankActualGP: 44.5,
-    pagos: []
+    pagos: [],
+    componentes: [],
+    membresia: {}
   };
 
   let tasaBCVActual = 402.3343;
@@ -300,16 +356,17 @@
   let paginaActualFarmeo = 1;
   const diasPorPagina = 10;
   let mesActualGrafica = new Date();
+  let editandoFarmeoId = null;
 
-  // PRECIOS DE PURPLES (SOLO TOB)
+  // PRECIOS DE PURPLES (OSRS GE REALES)
   const preciosPurples = {
-    'scythe': 1200,
-    'sang': 800,
-    'justiciar_face': 180,
-    'justiciar_body': 250,
-    'justiciar_legs': 220,
-    'ghrazi': 60,
-    'avernic': 90
+    'scythe': 1600,
+    'sang': 19.6,
+    'justiciar_face': 0.18,
+    'justiciar_body': 0.25,
+    'justiciar_legs': 0.22,
+    'ghrazi': 31,
+    'avernic': 0.09
   };
 
   // CARGAR DATOS
@@ -318,7 +375,7 @@
       const response = await fetch("data.json?t=" + Date.now());
       if (response.ok) {
         const data = await response.json();
-        state.nextId = data.nextId || 1;
+        state.nextId = data.nextId || 11;
         state.farmeo = data.farmeo || [];
         state.objetivos = data.objetivos || [];
         state.tasaGP = data.tasaGP || 0.0002;
@@ -326,6 +383,8 @@
         state.tasaBinance = data.tasaBinance || 583;
         state.bankActualGP = data.bankActualGP || 44.5;
         state.pagos = data.pagos || [];
+        state.componentes = data.componentes || [];
+        state.membresia = data.membresia || {};
         tasaBCVActual = state.tasaBCV;
         tasaBinanceActual = state.tasaBinance;
         console.log("✅ Datos cargados correctamente");
@@ -336,7 +395,7 @@
   }
 
   function guardarDatos() {
-    console.log("💾 Datos guardados (Manus actualizará en GitHub):", state);
+    console.log("💾 Datos guardados (Manus actualizará en GitHub)");
   }
 
   // UTILIDADES
@@ -463,6 +522,40 @@
     cerrarModalFarmeo();
   }
 
+  function abrirModalEditarFarmeo(id) {
+    const dia = state.farmeo.find(d => d.id === id);
+    if (!dia) return;
+    
+    editandoFarmeoId = id;
+    document.getElementById('editFarmeoFecha').value = dia.fecha;
+    document.getElementById('editFarmeoGP').value = dia.gp;
+    document.getElementById('editFarmeoToB').value = dia.tob;
+    document.getElementById('editFarmeoNotas').value = dia.notas;
+    document.getElementById('modalEditarFarmeo').classList.add('active');
+  }
+
+  function cerrarModalEditarFarmeo() {
+    document.getElementById('modalEditarFarmeo').classList.remove('active');
+    editandoFarmeoId = null;
+  }
+
+  function guardarEditarFarmeo() {
+    if (!editandoFarmeoId) return;
+    
+    const dia = state.farmeo.find(d => d.id === editandoFarmeoId);
+    if (!dia) return;
+
+    dia.fecha = document.getElementById('editFarmeoFecha').value;
+    dia.gp = parseFloat(document.getElementById('editFarmeoGP').value) || 0;
+    dia.tob = parseInt(document.getElementById('editFarmeoToB').value) || 0;
+    dia.notas = document.getElementById('editFarmeoNotas').value;
+
+    state.farmeo.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+    guardarDatos();
+    renderFarmeo();
+    cerrarModalEditarFarmeo();
+  }
+
   function renderFarmeo() {
     const tbody = document.getElementById('farmeoBody');
     tbody.innerHTML = '';
@@ -477,7 +570,7 @@
       tr.innerHTML = `
         <td>${idx}</td>
         <td>${formatFecha(dia.fecha)}</td>
-        <td class="gp-cell" contenteditable="true" onkeydown="if(event.key==='Enter') { event.preventDefault(); editarGP(${dia.id}, this.textContent); }" onblur="editarGP(${dia.id}, this.textContent)">${dia.gp.toFixed(1)} / 15-20m</td>
+        <td class="gp-cell" onclick="abrirModalEditarFarmeo(${dia.id})">${dia.gp.toFixed(1)} / 15-20m</td>
         <td>${dia.tob || 0} / 5</td>
         <td>${dia.notas.includes('[') ? '💎' : '—'}</td>
         <td title="${dia.notas}" style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${dia.notas}</td>
@@ -489,21 +582,6 @@
     document.getElementById('paginaInfo').textContent = `${paginaActualFarmeo}/${totalPags}`;
     actualizarTotales();
     renderGrafica();
-  }
-
-  function editarGP(id, text) {
-    const dia = state.farmeo.find(d => d.id === id);
-    if (dia) {
-      const val = parseFloat(text.split('/')[0].trim());
-      if (!isNaN(val) && val >= 0) {
-        dia.gp = val;
-        guardarDatos();
-        renderFarmeo();
-        renderBank();
-      } else {
-        renderFarmeo(); // Restaurar valor original
-      }
-    }
   }
 
   function eliminarDia(id) {
@@ -654,19 +732,6 @@
     const tbody = document.getElementById('pagosBody');
     tbody.innerHTML = '';
 
-    if (state.pagos.length === 0) {
-      const meses = ['Marzo', 'Abril', 'Mayo', 'Junio'];
-      meses.forEach((m, i) => {
-        state.pagos.push({
-          id: state.nextId++,
-          mes: m,
-          fechaLimite: `2026-0${i+3}-10`,
-          monto: 20,
-          estado: 'Pendiente'
-        });
-      });
-    }
-
     state.pagos.forEach(pago => {
       const hoy = new Date();
       const limite = new Date(pago.fechaLimite + 'T00:00:00Z');
@@ -714,6 +779,51 @@
     }
   }
 
+  // COMPONENTES PC
+  function renderComponentes() {
+    const grid = document.getElementById('componentesGrid');
+    grid.innerHTML = '';
+    state.componentes.forEach(comp => {
+      const div = document.createElement('div');
+      div.className = 'componente-item';
+      div.innerHTML = `
+        <div class="componente-nombre">${comp.nombre}</div>
+        <div class="componente-precio">
+          <div class="componente-usd">$${comp.precioUSD}</div>
+          <div class="componente-bs">${comp.precioBS.toLocaleString('es-VE')} Bs</div>
+        </div>
+      `;
+      grid.appendChild(div);
+    });
+
+    const totalUSD = state.totalComponentesUSD || 630;
+    const totalBS = state.totalComponentesBS || 340200;
+    document.getElementById('totalComponentesUSD').textContent = '$' + totalUSD;
+    document.getElementById('totalComponentesBS').textContent = totalBS.toLocaleString('es-VE') + ' Bs';
+  }
+
+  // MEMBRESÍA
+  function renderMembresia() {
+    if (!state.membresia.fechaCompra) return;
+
+    const fechaCompra = new Date(state.membresia.fechaCompra + 'T00:00:00Z');
+    const fechaVencimiento = new Date(state.membresia.fechaVencimiento + 'T00:00:00Z');
+    const hoy = new Date();
+    
+    let diasRestantes = Math.ceil((fechaVencimiento - hoy) / (1000 * 60 * 60 * 24));
+    if (diasRestantes < 0) diasRestantes = 0;
+
+    document.getElementById('diasRestantes').textContent = diasRestantes;
+
+    const warning = document.getElementById('membresia-warning');
+    if (diasRestantes <= 7) {
+      warning.style.display = 'block';
+      warning.textContent = `⚠️ ${diasRestantes} días para renovar (vence ${formatFecha(state.membresia.fechaVencimiento)})`;
+    } else {
+      warning.style.display = 'none';
+    }
+  }
+
   // INICIALIZAR
   async function init() {
     await cargarDatos();
@@ -722,6 +832,8 @@
     renderFarmeo();
     renderObjetivos();
     renderPagos();
+    renderComponentes();
+    renderMembresia();
     console.log("✅ Aplicación inicializada");
   }
 

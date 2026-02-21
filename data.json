@@ -1,124 +1,43 @@
 {
   "nextId": 11,
   "farmeo": [
-    {
-      "id": 1,
-      "fecha": "2026-02-11",
-      "gp": 30.8,
-      "tob": 5,
-      "notas": "Primer día completado"
-    },
-    {
-      "id": 2,
-      "fecha": "2026-02-12",
-      "gp": 32.6,
-      "tob": 5,
-      "notas": "Meta superada"
-    },
-    {
-      "id": 3,
-      "fecha": "2026-02-13",
-      "gp": 19.4,
-      "tob": 2,
-      "notas": "Tentacle disuelto"
-    },
-    {
-      "id": 4,
-      "fecha": "2026-02-14",
-      "gp": 4,
-      "tob": 0,
-      "notas": "Descanso planeado"
-    },
-    {
-      "id": 5,
-      "fecha": "2026-02-15",
-      "gp": 0,
-      "tob": 0,
-      "notas": "Bond renovada – deuda BCV pagada"
-    },
-    {
-      "id": 6,
-      "fecha": "2026-02-16",
-      "gp": 30.3,
-      "tob": 0,
-      "notas": "LMS 107 pts"
-    },
-    {
-      "id": 7,
-      "fecha": "2026-02-17",
-      "gp": 0,
-      "tob": 0,
-      "notas": "LMS +136 pts (total 243 pts)"
-    },
-    {
-      "id": 8,
-      "fecha": "2026-02-18",
-      "gp": 0,
-      "tob": 0,
-      "notas": "LMS +160 pts (total 403 pts) 🔥"
-    },
-    {
-      "id": 9,
-      "fecha": "2026-02-19",
-      "gp": 16,
-      "tob": 1,
-      "notas": "LMS COMPLETADO a las 15:29 – +16 m GP Revenants cierre 21:55"
-    },
-    {
-      "id": 10,
-      "fecha": "2026-02-20",
-      "gp": -1.6,
-      "tob": 0,
-      "notas": "Empezó ~12:13 – +2,3 m farmed – perdí 3,9 m por PK (neto -1,6 m)"
-    }
+    {"id": 1, "fecha": "2026-02-11", "gp": 30.8, "tob": 5, "notas": "Primer día completado"},
+    {"id": 2, "fecha": "2026-02-12", "gp": 32.6, "tob": 5, "notas": "Meta superada"},
+    {"id": 3, "fecha": "2026-02-13", "gp": 19.4, "tob": 2, "notas": "Tentacle disuelto"},
+    {"id": 4, "fecha": "2026-02-14", "gp": 4, "tob": 0, "notas": "Descanso planeado"},
+    {"id": 5, "fecha": "2026-02-15", "gp": 0, "tob": 0, "notas": "Bond renovada – deuda BCV pagada"},
+    {"id": 6, "fecha": "2026-02-16", "gp": 30.3, "tob": 0, "notas": "LMS 107 pts"},
+    {"id": 7, "fecha": "2026-02-17", "gp": 0, "tob": 0, "notas": "LMS +136 pts (total 243 pts)"},
+    {"id": 8, "fecha": "2026-02-18", "gp": 0, "tob": 0, "notas": "LMS +160 pts (total 403 pts) 🔥"},
+    {"id": 9, "fecha": "2026-02-19", "gp": 16, "tob": 1, "notas": "LMS COMPLETADO a las 15:29 – +16 m GP Revenants"},
+    {"id": 10, "fecha": "2026-02-20", "gp": -1.6, "tob": 0, "notas": "Empezó ~12:13 – +2,3 m farmed – perdí 3,9 m por PK"}
   ],
   "objetivos": [
-    {
-      "id": 1,
-      "nombre": "Completar LMS",
-      "meta": 500,
-      "actual": 500,
-      "plazo": "Completado 19-feb",
-      "detalles": {
-        "dia6": 107,
-        "dia7": 136,
-        "dia8": 160,
-        "dia9": 97
-      }
-    }
+    {"id": 1, "nombre": "Completar LMS", "meta": 500, "actual": 500, "plazo": "Completado 19-feb", "detalles": {"dia6": 107, "dia7": 136, "dia8": 160, "dia9": 97}}
   ],
   "tasaGP": 0.0002,
   "tasaBCV": 402.3343,
   "tasaBinance": 583,
   "bankActualGP": 44.5,
   "pagos": [
-    {
-      "id": 1,
-      "mes": "Marzo",
-      "fechaLimite": "2026-03-10",
-      "monto": 20,
-      "estado": "Pendiente"
-    },
-    {
-      "id": 2,
-      "mes": "Abril",
-      "fechaLimite": "2026-04-10",
-      "monto": 20,
-      "estado": "Pendiente"
-    },
-    {
-      "id": 3,
-      "mes": "Mayo",
-      "fechaLimite": "2026-05-10",
-      "monto": 20,
-      "estado": "Pendiente"
-    },
-    {
-      "id": 4,
-      "mes": "Junio",
-      "fechaLimite": "2026-06-10",
-      "monto": 20,
-      "estado": "Pendiente"
-    }
-  ]
+    {"id": 1, "mes": "Marzo", "fechaLimite": "2026-03-10", "monto": 20, "estado": "Pendiente"},
+    {"id": 2, "mes": "Abril", "fechaLimite": "2026-04-10", "monto": 20, "estado": "Pendiente"},
+    {"id": 3, "mes": "Mayo", "fechaLimite": "2026-05-10", "monto": 20, "estado": "Pendiente"},
+    {"id": 4, "mes": "Junio", "fechaLimite": "2026-06-10", "monto": 20, "estado": "Pendiente"}
+  ],
+  "componentes": [
+    {"id": 1, "nombre": "CPU AMD Ryzen 5 7600X", "precioUSD": 253, "precioBS": 136620},
+    {"id": 2, "nombre": "Motherboard ASUS TUF B650-Plus WiFi", "precioUSD": 323, "precioBS": 174420},
+    {"id": 3, "nombre": "Cooler DeepCool AK400", "precioUSD": 31, "precioBS": 16740},
+    {"id": 4, "nombre": "Envío", "precioUSD": 23, "precioBS": 12420}
+  ],
+  "totalComponentesUSD": 630,
+  "totalComponentesBS": 340200,
+  "membresia": {
+    "fechaCompra": "2026-02-15",
+    "diasDuracion": 14,
+    "fechaVencimiento": "2026-02-28",
+    "precioUSD": 10.99,
+    "precioBS": 5930
+  }
 }
