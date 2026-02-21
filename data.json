@@ -13,7 +13,8 @@
     {"id": 10, "fecha": "2026-02-20", "gp": -1.6, "tob": 0, "notas": "Empezó ~12:13 – +2,3 m farmed – perdí 3,9 m por PK"}
   ],
   "objetivos": [
-    {"id": 1, "nombre": "Completar LMS", "meta": 500, "actual": 500, "plazo": "Completado 19-feb", "detalles": {"dia6": 107, "dia7": 136, "dia8": 160, "dia9": 97}}
+    {"id": 1, "nombre": "Moto (800$ BCV)", "meta": 800, "actual": 0, "plazo": "Meta 1", "tipo": "moto"},
+    {"id": 2, "nombre": "Computadora PC (630$ BCV)", "meta": 630, "actual": 0, "plazo": "Meta 2", "tipo": "pc"}
   ],
   "tasaGP": 0.0002,
   "tasaBCV": 402.3343,

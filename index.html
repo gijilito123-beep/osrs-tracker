@@ -11,8 +11,9 @@
     .header { background: linear-gradient(135deg, #1a56db 0%, #0e9f6e 100%); color: white; padding: 1.5rem; }
     .header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.3rem; }
     .header p { font-size: 0.9rem; opacity: 0.9; margin-bottom: 1rem; }
-    .header-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; }
-    .info-card { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 0.7rem 1rem; font-size: 0.85rem; }
+    .header-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem; }
+    .info-card { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 0.8rem 1rem; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+    .info-card:hover { background: rgba(255,255,255,0.18); }
     .info-label { opacity: 0.8; margin-bottom: 0.2rem; font-size: 0.75rem; }
     .info-value { font-weight: 700; font-size: 0.95rem; }
     .info-sub { opacity: 0.75; font-size: 0.7rem; margin-top: 0.1rem; }
@@ -60,19 +61,18 @@
     .objetivo-item { background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 0.8rem; }
     .objetivo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
     .objetivo-name { font-weight: 700; }
-    .progress-bar { background: #e5e7eb; height: 6px; border-radius: 999px; overflow: hidden; margin-bottom: 0.5rem; }
+    .progress-bar { background: #e5e7eb; height: 8px; border-radius: 999px; overflow: hidden; margin-bottom: 0.5rem; }
     .progress-fill { background: linear-gradient(90deg, #a855f7, #ec4899); height: 100%; border-radius: 999px; }
     .objetivo-values { display: flex; justify-content: space-between; font-size: 0.8rem; }
-    .componente-item { background: #f9fafb; border-radius: 8px; padding: 0.8rem; margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: center; }
-    .componente-nombre { font-weight: 600; font-size: 0.9rem; }
-    .componente-precio { text-align: right; }
-    .componente-usd { color: #0e9f6e; font-weight: 700; }
-    .componente-bs { font-size: 0.8rem; color: #6b7280; }
     .membresia-card { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 10px; padding: 1.2rem; color: white; }
     .membresia-label { font-size: 0.8rem; opacity: 0.9; margin-bottom: 0.3rem; }
     .membresia-value { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem; }
     .membresia-info { font-size: 0.75rem; opacity: 0.85; }
     .membresia-warning { background: #fee2e2; color: #991b1b; border-radius: 6px; padding: 0.6rem; margin-top: 0.8rem; font-size: 0.8rem; font-weight: 600; }
+    .bank-desglose { background: #f9fafb; border-radius: 8px; padding: 1rem; margin-top: 0.8rem; }
+    .bank-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .bank-label { color: #6b7280; }
+    .bank-value { font-weight: 700; }
     footer { background: #1f2937; color: white; text-align: center; padding: 1rem; margin-top: 2rem; font-size: 0.8rem; }
     @media (max-width: 768px) {
       .header { padding: 1rem; }
@@ -98,10 +98,10 @@
       <div class="info-label">📍 Ubicación</div>
       <div class="info-value">Maturín, VE</div>
     </div>
-    <div class="info-card" onclick="abrirModalBank()" style="cursor: pointer;">
-      <div class="info-label">💰 Bank</div>
+    <div class="info-card" onclick="abrirModalBank()">
+      <div class="info-label">💰 Bank Actual</div>
       <div class="info-value" id="bankGP">44.5 m</div>
-      <div class="info-sub" id="bankBs">0 Bs</div>
+      <div class="info-sub" id="bankResumen">0 Bs • $0 BCV • $0 Binance</div>
     </div>
   </div>
 </div>
@@ -148,20 +148,10 @@
     </div>
   </div>
 
-  <!-- COMPONENTES PC -->
-  <div class="section-title">🖥️ Componentes PC</div>
+  <!-- METAS -->
+  <div class="section-title">🎯 Metas Principales</div>
   <div class="card">
-    <div id="componentesGrid"></div>
-    <div style="background: #f3f4f6; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
-      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-        <span style="font-weight: 700;">Total USD</span>
-        <span style="color: #0e9f6e; font-weight: 800;" id="totalComponentesUSD">$630</span>
-      </div>
-      <div style="display: flex; justify-content: space-between;">
-        <span style="font-weight: 700;">Total Bs</span>
-        <span style="color: #1d4ed8; font-weight: 800;" id="totalComponentesBS">340,200 Bs</span>
-      </div>
-    </div>
+    <div id="metasGrid"></div>
   </div>
 
   <!-- MEMBRESÍA -->
@@ -247,13 +237,6 @@
     </div>
   </div>
 
-  <!-- OBJETIVOS -->
-  <div class="section-title">🎯 Objetivos</div>
-  <div class="card">
-    <button class="btn-primary" style="margin-bottom: 1rem;" onclick="abrirModalObjetivo()">➕ Nuevo</button>
-    <div id="objetivosGrid"></div>
-  </div>
-
 </div>
 
 <!-- MODALES -->
@@ -267,11 +250,11 @@
       <option value="none">Sin Purple</option>
       <option value="scythe">Scythe of Vitur (1600m)</option>
       <option value="sang">Sang Staff (19.6m)</option>
-      <option value="justiciar_face">Justiciar Faceguard (180m)</option>
-      <option value="justiciar_body">Justiciar Body (250m)</option>
-      <option value="justiciar_legs">Justiciar Legs (220m)</option>
+      <option value="justiciar_face">Justiciar Faceguard (0.18m)</option>
+      <option value="justiciar_body">Justiciar Body (0.25m)</option>
+      <option value="justiciar_legs">Justiciar Legs (0.22m)</option>
       <option value="ghrazi">Ghrazi Rapier (31m)</option>
-      <option value="avernic">Avernic Defender (90m)</option>
+      <option value="avernic">Avernic Defender (0.09m)</option>
       <option value="other">Otro (especificar GP)</option>
     </select>
     <input type="number" id="farmeoPurpleGP" placeholder="GP del Purple (millones)" step="0.1" style="display: none;" />
@@ -319,19 +302,6 @@
   </div>
 </div>
 
-<div id="modalObjetivo" class="modal">
-  <div class="modal-content">
-    <h2>➕ Nuevo Objetivo</h2>
-    <input type="text" id="inputObjetivoNombre" placeholder="Nombre" />
-    <input type="number" id="inputObjetivoMeta" placeholder="Meta (millones de GP)" step="0.1" />
-    <input type="text" id="inputObjetivoPlazo" placeholder="Plazo" />
-    <div class="modal-buttons">
-      <button class="btn-secondary" onclick="cerrarModalObjetivo()">Cancelar</button>
-      <button class="btn-primary" onclick="guardarObjetivo()">Guardar</button>
-    </div>
-  </div>
-</div>
-
 <footer>
   <p>🎮 OSRS Tracker v1.0 • Última actualización: 20 de febrero de 2026</p>
 </footer>
@@ -346,7 +316,6 @@
     tasaBinance: 583,
     bankActualGP: 44.5,
     pagos: [],
-    componentes: [],
     membresia: {}
   };
 
@@ -358,7 +327,6 @@
   let mesActualGrafica = new Date();
   let editandoFarmeoId = null;
 
-  // PRECIOS DE PURPLES (OSRS GE REALES)
   const preciosPurples = {
     'scythe': 1600,
     'sang': 19.6,
@@ -375,30 +343,23 @@
       const response = await fetch("data.json?t=" + Date.now());
       if (response.ok) {
         const data = await response.json();
-        state.nextId = data.nextId || 11;
-        state.farmeo = data.farmeo || [];
-        state.objetivos = data.objetivos || [];
-        state.tasaGP = data.tasaGP || 0.0002;
-        state.tasaBCV = data.tasaBCV || 402.3343;
-        state.tasaBinance = data.tasaBinance || 583;
-        state.bankActualGP = data.bankActualGP || 44.5;
-        state.pagos = data.pagos || [];
-        state.componentes = data.componentes || [];
-        state.membresia = data.membresia || {};
+        state = data;
         tasaBCVActual = state.tasaBCV;
         tasaBinanceActual = state.tasaBinance;
         console.log("✅ Datos cargados correctamente");
+        return true;
       }
     } catch (e) {
       console.error("❌ Error cargando datos:", e);
     }
+    return false;
   }
 
   function guardarDatos() {
-    console.log("💾 Datos guardados (Manus actualizará en GitHub)");
+    console.log("💾 Datos guardados localmente (Manus sincronizará con GitHub)");
+    localStorage.setItem('osrs_tracker_backup', JSON.stringify(state));
   }
 
-  // UTILIDADES
   function formatFecha(f) {
     const d = new Date(f + 'T00:00:00Z');
     return d.toLocaleDateString('es-VE');
@@ -448,9 +409,14 @@
   // BANK
   function renderBank() {
     document.getElementById('bankGP').textContent = state.bankActualGP.toFixed(1) + ' m';
-    const usd = state.bankActualGP * state.tasaGP;
-    const bs = usd * tasaBCVActual;
-    document.getElementById('bankBs').textContent = bs.toFixed(0) + ' Bs';
+    const usd_bcv = state.bankActualGP * state.tasaGP;
+    const usd_binance = state.bankActualGP * state.tasaGP;
+    const bs = usd_bcv * tasaBCVActual;
+    const usd_bcv_final = usd_bcv;
+    const usd_binance_final = usd_binance;
+    
+    document.getElementById('bankResumen').textContent = 
+      bs.toFixed(0) + ' Bs • $' + usd_bcv_final.toFixed(2) + ' BCV • $' + usd_binance_final.toFixed(2) + ' Binance';
   }
 
   function abrirModalBank() {
@@ -657,9 +623,9 @@
     renderGrafica();
   }
 
-  // OBJETIVOS
-  function renderObjetivos() {
-    const grid = document.getElementById('objetivosGrid');
+  // METAS
+  function renderMetas() {
+    const grid = document.getElementById('metasGrid');
     grid.innerHTML = '';
     state.objetivos.forEach(obj => {
       const pct = Math.min((obj.actual / obj.meta) * 100, 100);
@@ -668,62 +634,29 @@
       div.innerHTML = `
         <div class="objetivo-header">
           <span class="objetivo-name">${obj.nombre}</span>
-          <button class="btn-delete" onclick="eliminarObjetivo(${obj.id})">🗑</button>
         </div>
         <div class="progress-bar">
           <div class="progress-fill" style="width: ${pct}%"></div>
         </div>
         <div class="objetivo-values">
-          <span>Actual: <strong contenteditable="true" onblur="editarActualObjetivo(${obj.id}, this.textContent)">${obj.actual.toFixed(1)}</strong> m</span>
-          <span>Meta: <strong>${obj.meta.toFixed(1)}</strong> m</span>
+          <span>Actual: <strong contenteditable="true" onblur="editarActualMeta(${obj.id}, this.textContent)">${obj.actual.toFixed(2)}</strong> ${obj.tipo === 'moto' ? '$' : '$'}</span>
+          <span>Meta: <strong>${obj.meta.toFixed(2)}</strong> ${obj.tipo === 'moto' ? '$' : '$'}</span>
         </div>
         <div style="font-size: 0.75rem; color: #6b7280;">📅 ${obj.plazo}</div>
-        ${obj.detalles ? `<div style="font-size: 0.7rem; color: #6b7280; margin-top: 0.3rem;">D6: ${obj.detalles.dia6} | D7: ${obj.detalles.dia7} | D8: ${obj.detalles.dia8} | D9: ${obj.detalles.dia9}</div>` : ''}
       `;
       grid.appendChild(div);
     });
   }
 
-  function abrirModalObjetivo() {
-    document.getElementById('inputObjetivoNombre').value = '';
-    document.getElementById('inputObjetivoMeta').value = '';
-    document.getElementById('inputObjetivoPlazo').value = '';
-    document.getElementById('modalObjetivo').classList.add('active');
-  }
-
-  function cerrarModalObjetivo() {
-    document.getElementById('modalObjetivo').classList.remove('active');
-  }
-
-  function guardarObjetivo() {
-    const nombre = document.getElementById('inputObjetivoNombre').value;
-    const meta = parseFloat(document.getElementById('inputObjetivoMeta').value);
-    const plazo = document.getElementById('inputObjetivoPlazo').value;
-    if (nombre && meta > 0) {
-      state.objetivos.push({ id: state.nextId++, nombre, meta, actual: 0, plazo });
-      guardarDatos();
-      renderObjetivos();
-      cerrarModalObjetivo();
-    }
-  }
-
-  function editarActualObjetivo(id, text) {
+  function editarActualMeta(id, text) {
     const obj = state.objetivos.find(o => o.id === id);
     if (obj) {
       const val = parseFloat(text);
       if (!isNaN(val)) {
         obj.actual = val;
         guardarDatos();
-        renderObjetivos();
+        renderMetas();
       }
-    }
-  }
-
-  function eliminarObjetivo(id) {
-    if (confirm('¿Eliminar?')) {
-      state.objetivos = state.objetivos.filter(o => o.id !== id);
-      guardarDatos();
-      renderObjetivos();
     }
   }
 
@@ -750,6 +683,7 @@
         textColor = '#991b1b';
         pago.estado = 'Mora';
       } else if (estado === 'Mora') {
+        monto *= 1.5;
         color = '#fee2e2';
         textColor = '#991b1b';
       }
@@ -779,34 +713,10 @@
     }
   }
 
-  // COMPONENTES PC
-  function renderComponentes() {
-    const grid = document.getElementById('componentesGrid');
-    grid.innerHTML = '';
-    state.componentes.forEach(comp => {
-      const div = document.createElement('div');
-      div.className = 'componente-item';
-      div.innerHTML = `
-        <div class="componente-nombre">${comp.nombre}</div>
-        <div class="componente-precio">
-          <div class="componente-usd">$${comp.precioUSD}</div>
-          <div class="componente-bs">${comp.precioBS.toLocaleString('es-VE')} Bs</div>
-        </div>
-      `;
-      grid.appendChild(div);
-    });
-
-    const totalUSD = state.totalComponentesUSD || 630;
-    const totalBS = state.totalComponentesBS || 340200;
-    document.getElementById('totalComponentesUSD').textContent = '$' + totalUSD;
-    document.getElementById('totalComponentesBS').textContent = totalBS.toLocaleString('es-VE') + ' Bs';
-  }
-
   // MEMBRESÍA
   function renderMembresia() {
     if (!state.membresia.fechaCompra) return;
 
-    const fechaCompra = new Date(state.membresia.fechaCompra + 'T00:00:00Z');
     const fechaVencimiento = new Date(state.membresia.fechaVencimiento + 'T00:00:00Z');
     const hoy = new Date();
     
@@ -826,13 +736,17 @@
 
   // INICIALIZAR
   async function init() {
-    await cargarDatos();
+    const cargado = await cargarDatos();
+    if (!cargado) {
+      console.warn("⚠️ No se pudo cargar data.json, usando backup local");
+      const backup = localStorage.getItem('osrs_tracker_backup');
+      if (backup) state = JSON.parse(backup);
+    }
     renderTasas();
     renderBank();
     renderFarmeo();
-    renderObjetivos();
+    renderMetas();
     renderPagos();
-    renderComponentes();
     renderMembresia();
     console.log("✅ Aplicación inicializada");
   }
