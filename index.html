@@ -393,21 +393,34 @@
   // CARGAR DATOS
   async function cargarDatos() {
     const saved = localStorage.getItem('osrs_tracker_state');
+    let localState = null;
     if (saved) {
-      state = JSON.parse(saved);
-      console.log("✅ Datos cargados desde localStorage");
-    } else {
-      try {
-        const response = await fetch("data.json?t=" + Date.now());
-        if (response.ok) {
-          const data = await response.json();
-          state = data;
-          guardarDatos();
+      localState = JSON.parse(saved);
+    }
+
+    try {
+      const response = await fetch("data.json?t=" + Date.now());
+      if (response.ok) {
+        const data = await response.json();
+        // Mezclar datos de data.json con localStorage
+        state = data;
+        if (localState) {
+          // Dar prioridad a localStorage para campos específicos
+          state.farmeo = localState.farmeo || state.farmeo;
+          state.objetivos = localState.objetivos || state.objetivos;
+          state.bankActualGP = localState.bankActualGP !== undefined ? localState.bankActualGP : state.bankActualGP;
+          state.tasaGP = localState.tasaGP || state.tasaGP;
+          state.projectName = localState.projectName || state.projectName;
+          state.pagos = localState.pagos || state.pagos;
+          state.membresia = localState.membresia || state.membresia;
+          console.log("✅ Datos mezclados (data.json + localStorage)");
+        } else {
           console.log("✅ Datos cargados desde data.json");
         }
-      } catch (e) {
-        console.error("❌ Error cargando datos:", e);
       }
+    } catch (e) {
+      console.error("❌ Error cargando data.json:", e);
+      if (localState) state = localState;
     }
     const savedTimestamps = localStorage.getItem('osrs_tracker_timestamps');
     if (savedTimestamps) {
@@ -419,6 +432,21 @@
     }
     tasaBCVActual = state.tasaBCV;
     tasaBinanceActual = state.tasaBinance;
+  }
+
+  function registrarTimestamp(tipo) {
+    const ahora = new Date();
+    let horas = ahora.getHours();
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    const segundos = String(ahora.getSeconds()).padStart(2, '0');
+    const ampm = horas >= 12 ? 'PM' : 'AM';
+    horas = horas % 12;
+    horas = horas ? horas : 12;
+    const horasStr = String(horas).padStart(2, '0');
+    const fecha = ahora.toISOString().split('T')[0];
+    const hora = `${horasStr}:${minutos}:${segundos} ${ampm}`;
+    ultimaActualizacionTasas[tipo] = { fecha, hora };
+    localStorage.setItem('osrs_tracker_timestamps', JSON.stringify(ultimaActualizacionTasas));
   }
 
   // ACTUALIZAR HORA EN TIEMPO REAL
