@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Elysian Progress Tracker</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='90' font-weight='bold' fill='%23d4af37'>⚔</text></svg>" />
+  <title>OSRS Tracker</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
@@ -14,18 +13,16 @@
     .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
     .header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
     .header h1:hover { text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
-    .header-tasas { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; }
-    .tasa-mini { background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 6px; padding: 0.5rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
-    .tasa-mini:hover { background: rgba(212, 175, 55, 0.15); }
-    .tasa-mini-label { opacity: 0.6; margin-bottom: 0.1rem; }
-    .tasa-mini-value { font-weight: 700; color: #d4af37; font-size: 0.85rem; }
-    .tasa-mini-hora { font-size: 0.65rem; opacity: 0.5; margin-top: 0.1rem; }
     .header-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
     .info-card { background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 6px; padding: 0.6rem 0.8rem; font-size: 0.8rem; }
     .info-label { opacity: 0.7; margin-bottom: 0.2rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
     .info-value { font-weight: 700; font-size: 0.9rem; color: #d4af37; }
     .info-sub { opacity: 0.6; font-size: 0.65rem; margin-top: 0.1rem; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+    .header-tasas { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; }
+    .tasa-mini { background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 6px; padding: 0.5rem; font-size: 0.75rem; }
+    .tasa-mini-label { opacity: 0.6; margin-bottom: 0.1rem; }
+    .tasa-mini-value { font-weight: 700; color: #d4af37; font-size: 0.85rem; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 1rem; }
     .section-title { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 0.8rem 0; color: #1a1410; border-bottom: 2px solid #d4af37; padding-bottom: 0.5rem; }
     .card { background: white; border-radius: 8px; padding: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 1.5rem; border-left: 4px solid #d4af37; }
     .btn-primary { background: #d4af37; color: #1a1410; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: all 0.2s; }
@@ -54,7 +51,7 @@
     .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 0.6rem; margin-bottom: 0.8rem; border: 1px solid #d4af37; border-radius: 6px; font-size: 0.9rem; }
     .modal-buttons { display: flex; gap: 0.8rem; }
     .modal-buttons button { flex: 1; padding: 0.6rem; }
-    .chart-container { position: relative; height: 350px; margin-top: 1rem; }
+    .chart-container { position: relative; height: 280px; margin-top: 1rem; }
     .objetivo-item { background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 0.8rem; border-left: 4px solid #d4af37; }
     .objetivo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
     .objetivo-name { font-weight: 700; color: #1a1410; }
@@ -65,17 +62,6 @@
     .membresia-label { font-size: 0.8rem; opacity: 0.8; margin-bottom: 0.3rem; font-weight: 700; }
     .membresia-value { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem; }
     .membresia-warning { background: #fee2e2; color: #991b1b; border-radius: 6px; padding: 0.6rem; margin-top: 0.8rem; font-size: 0.8rem; font-weight: 600; }
-    .search-section { background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 1.5rem; border-left: 4px solid #d4af37; }
-    .search-box { display: flex; gap: 0.8rem; margin-bottom: 1rem; }
-    .search-box input { flex: 1; padding: 0.8rem; border: 1px solid #d4af37; border-radius: 6px; font-size: 0.9rem; }
-    .search-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-    .item-card { background: #f9f7f4; border: 1px solid #d4af37; border-radius: 8px; padding: 1rem; text-align: center; }
-    .item-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    .item-name { font-weight: 700; color: #1a1410; margin-bottom: 0.3rem; }
-    .item-price { color: #d4af37; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.2rem; }
-    .item-details { font-size: 0.8rem; color: #6b7280; margin-bottom: 0.3rem; }
-    .item-margin { padding: 0.3rem 0.6rem; background: #d1fae5; color: #065f46; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
-    .item-drop { font-size: 0.75rem; color: #6b7280; margin-top: 0.3rem; }
     footer { background: #1a1410; color: #d4af37; text-align: center; padding: 1rem; margin-top: 2rem; font-size: 0.8rem; border-top: 2px solid #d4af37; }
     .editable-title { position: relative; display: inline-block; }
     .editable-title:hover { opacity: 0.8; }
@@ -87,7 +73,6 @@
       .header-tasas { grid-template-columns: repeat(3, 1fr); }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .table-wrapper { max-height: 400px; }
-      .search-results { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -95,7 +80,7 @@
 
 <div class="header">
   <div class="header-top">
-    <h1 class="editable-title" id="projectTitle" onclick="abrirModalTitulo()">⚔️ Elysian Progress</h1>
+    <h1 class="editable-title" id="projectTitle" onclick="abrirModalTitulo()">Proyecto Moto/PC</h1>
     <div class="header-tasas" id="headerTasas"></div>
   </div>
   <div class="header-info">
@@ -118,118 +103,112 @@
 <div class="container">
 
   <!-- PAGOS DEL CURSO -->
+  <div class="section-title">💸 Pagos del Curso</div>
   <div class="card">
-    <h2 class="section-title">💳 Pagos del Curso</h2>
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
-            <th>📅 Mes</th>
-            <th>📆 Límite</th>
-            <th>💵 Monto</th>
-            <th>₿ Bs</th>
+            <th>Mes</th>
+            <th>Límite</th>
+            <th>Monto</th>
+            <th>Bs</th>
             <th>Estado</th>
           </tr>
         </thead>
-        <tbody id="pagosBody"></tbody>
+        <tbody id="pagosBody">
+        </tbody>
       </table>
     </div>
   </div>
 
   <!-- METAS -->
+  <div class="section-title">🎯 Metas Principales</div>
   <div class="card">
-    <h2 class="section-title">🎯 Metas del Proyecto</h2>
     <div id="metasGrid"></div>
   </div>
 
   <!-- MEMBRESÍA -->
+  <div class="section-title">🎫 Membresía OSRS</div>
   <div class="card">
-    <h2 class="section-title">🔑 Membresía OSRS</h2>
-    <div id="membresia"></div>
+    <div class="membresia-card">
+      <div class="membresia-label">Días Restantes</div>
+      <div class="membresia-value" id="diasRestantes">8</div>
+      <div style="font-size: 0.75rem; opacity: 0.8;">
+        <div>Comprada: 15 Feb 2026</div>
+        <div>Vencimiento: 28 Feb 2026</div>
+        <div style="margin-top: 0.3rem;">Precio: $10.99 (5,930 Bs)</div>
+      </div>
+      <div class="membresia-warning" id="membresia-warning">⚠️ Renovar antes del 28 de febrero</div>
+    </div>
   </div>
 
-  <!-- FARMEO DIARIO -->
+  <!-- FARMEO -->
+  <div class="section-title">📅 Farmeo Diario</div>
   <div class="card">
-    <h2 class="section-title">⚔️ Progreso Diario de Farmeo</h2>
-    <button class="btn-primary" onclick="abrirModalFarmeo()">➕ Añadir Día</button>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">💰</div>
-        <div class="stat-label">Total Generado</div>
-        <div class="stat-value" id="totalGenerado">0 m</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">📊</div>
-        <div class="stat-label">Promedio Diario</div>
-        <div class="stat-value" id="promedioDiario">0 m</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">📅</div>
-        <div class="stat-label">Días Farmeados</div>
-        <div class="stat-value" id="totalDias">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">💵</div>
-        <div class="stat-label">Valor en USD</div>
-        <div class="stat-value" id="valorBank">$0</div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+      <button class="btn-primary" onclick="abrirModalFarmeo()">➕ Añadir Día</button>
+      <div class="pagination">
+        <button class="btn-secondary" onclick="paginaAnterior()">← Anterior</button>
+        <span style="font-weight: 600; min-width: 50px; text-align: center;" id="paginaInfo">1/1</span>
+        <button class="btn-secondary" onclick="paginaSiguiente()">Siguiente →</button>
       </div>
     </div>
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
-            <th>#</th>
-            <th>📅 Fecha</th>
-            <th>⚔️ GP Farmeado</th>
-            <th>🏰 ToB</th>
-            <th>💎</th>
-            <th>📝 Notas</th>
-            <th>🗑</th>
+            <th>Día</th>
+            <th>Fecha</th>
+            <th>GP / 15-20m</th>
+            <th>ToB</th>
+            <th>Drops</th>
+            <th>Notas</th>
+            <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="farmeoBody"></tbody>
+        <tbody id="farmeoBody">
+        </tbody>
       </table>
-    </div>
-    <div class="pagination">
-      <button class="btn-secondary" onclick="paginaAnterior()">← Anterior</button>
-      <span id="paginaInfo">1/1</span>
-      <button class="btn-secondary" onclick="paginaSiguiente()">Siguiente →</button>
     </div>
   </div>
 
   <!-- GRÁFICA -->
+  <div class="section-title">📈 Gráfica de Progreso</div>
   <div class="card">
-    <h2 class="section-title">📈 Gráfica de Progreso</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+      <button class="btn-secondary" onclick="mesAnterior()">← Mes Anterior</button>
+      <span style="font-weight: 600;" id="mesActual">Febrero 2026</span>
+      <button class="btn-secondary" onclick="mesSiguiente()">Mes Siguiente →</button>
+    </div>
     <div class="chart-container">
       <canvas id="farmeoChart"></canvas>
     </div>
   </div>
 
   <!-- ANÁLISIS -->
-  <div class="card">
-    <h2 class="section-title">📊 Análisis Detallado</h2>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">🎯</div>
-        <div class="stat-label">Eficiencia</div>
-        <div class="stat-value" id="eficiencia">0%</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">⏱️</div>
-        <div class="stat-label">Velocidad GP/h</div>
-        <div class="stat-value" id="velocidad">0 m</div>
-      </div>
+  <div class="section-title">📊 Análisis de Rendimiento</div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-label">Promedio</div>
+      <div class="stat-value" id="promedioDiario">0 m</div>
     </div>
-  </div>
-
-  <!-- BUSCADOR DE ITEMS -->
-  <div class="search-section">
-    <h2 class="section-title">🔍 Buscador de Items OSRS</h2>
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Busca un item (ej: Scythe, Sang Staff, etc.)" onkeyup="buscarItem()" />
-      <button class="btn-primary" onclick="buscarItem()">Buscar</button>
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div class="stat-label">Total</div>
+      <div class="stat-value" id="totalGenerado">0 m</div>
     </div>
-    <div id="searchResults" class="search-results"></div>
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-label">Días</div>
+      <div class="stat-value" id="totalDias">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💎</div>
+      <div class="stat-label">Bank USD</div>
+      <div class="stat-value" id="valorBank">$0</div>
+    </div>
   </div>
 
 </div>
@@ -246,47 +225,24 @@
   </div>
 </div>
 
-<div id="modalBank" class="modal">
-  <div class="modal-content">
-    <h2>💰 Editar Bank Actual</h2>
-    <input type="number" id="inputBankGP" placeholder="Bank (millones de GP)" step="0.1" />
-    <div class="modal-buttons">
-      <button class="btn-secondary" onclick="cerrarModalBank()">Cancelar</button>
-      <button class="btn-primary" onclick="guardarBank()">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<div id="modalTasaGP" class="modal">
-  <div class="modal-content">
-    <h2>Editar Tasa GP/USD (Binance)</h2>
-    <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Esta es la tasa de conversión de GP a USD en Binance. Ajústala según el mercado actual.</p>
-    <input type="number" id="inputTasaGP" placeholder="Tasa GP/USD" step="0.00001" />
-    <div class="modal-buttons">
-      <button class="btn-secondary" onclick="cerrarModalTasaGP()">Cancelar</button>
-      <button class="btn-primary" onclick="guardarTasaGP()">Guardar</button>
-    </div>
-  </div>
-</div>
-
 <div id="modalFarmeo" class="modal">
   <div class="modal-content">
-    <h2>⚔️ Añadir Día de Farmeo</h2>
+    <h2>➕ Añadir Día de Farmeo</h2>
     <input type="date" id="farmeoFecha" />
     <input type="number" id="farmeoGP" placeholder="GP Farmeado (millones)" step="0.1" />
-    <input type="number" id="farmeoToB" placeholder="ToB completadas" step="1" />
-    <select id="farmeoPurple">
+    <input type="number" id="farmeoToB" placeholder="ToB (cantidad)" step="1" />
+    <select id="farmeoPurple" onchange="togglePurpleInput()">
       <option value="none">Sin Purple</option>
       <option value="scythe">Scythe of Vitur (1600m)</option>
       <option value="sang">Sang Staff (19.6m)</option>
-      <option value="ghrazi">Ghrazi Rapier (31m)</option>
       <option value="justiciar_face">Justiciar Faceguard (0.18m)</option>
       <option value="justiciar_body">Justiciar Body (0.25m)</option>
       <option value="justiciar_legs">Justiciar Legs (0.22m)</option>
+      <option value="ghrazi">Ghrazi Rapier (31m)</option>
       <option value="avernic">Avernic Defender (0.09m)</option>
-      <option value="other">Otro Purple</option>
+      <option value="other">Otro (especificar GP)</option>
     </select>
-    <input type="number" id="farmeoPurpleGP" placeholder="Precio del Purple (millones)" step="0.1" style="display: none;" />
+    <input type="number" id="farmeoPurpleGP" placeholder="GP del Purple (millones)" step="0.1" style="display: none;" />
     <textarea id="farmeoNotas" placeholder="Notas" rows="2"></textarea>
     <div class="modal-buttons">
       <button class="btn-secondary" onclick="cerrarModalFarmeo()">Cancelar</button>
@@ -309,9 +265,32 @@
   </div>
 </div>
 
+<div id="modalBank" class="modal">
+  <div class="modal-content">
+    <h2>Editar Bank Actual</h2>
+    <input type="number" id="inputBankGP" placeholder="Bank (millones de GP)" step="0.1" />
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="cerrarModalBank()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarBank()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalTasaGP" class="modal">
+  <div class="modal-content">
+    <h2>Editar Tasa GP/USD (Binance)</h2>
+    <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Esta es la tasa de conversión de GP a USD en Binance. Ajústala según el mercado actual.</p>
+    <input type="number" id="inputTasaGP" placeholder="Tasa GP/USD" step="0.00001" />
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="cerrarModalTasaGP()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarTasaGP()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <div id="modalNuevoObjetivo" class="modal">
   <div class="modal-content">
-    <h2>🎯 Nuevo Objetivo</h2>
+    <h2>Nuevo Objetivo</h2>
     <input type="text" id="inputObjetivoNombre" placeholder="Nombre del objetivo" />
     <input type="number" id="inputObjetivoMeta" placeholder="Meta (USD o cantidad)" step="0.1" />
     <select id="inputObjetivoTipo">
@@ -328,7 +307,7 @@
 
 <div id="modalEditarObjetivo" class="modal">
   <div class="modal-content">
-    <h2>✏️ Editar Objetivo</h2>
+    <h2>Editar Objetivo</h2>
     <input type="hidden" id="editandoObjetivoId" />
     <input type="text" id="inputEditObjetivoNombre" placeholder="Nombre" />
     <input type="number" id="inputEditObjetivoMeta" placeholder="Meta" step="0.1" />
@@ -340,25 +319,13 @@
   </div>
 </div>
 
-<div id="modalBond" class="modal">
-  <div class="modal-content">
-    <h2>🔑 Registrar Bond (14 días)</h2>
-    <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Selecciona la fecha en que compraste el bond. Se vencerá automáticamente en 14 días.</p>
-    <input type="date" id="bondFecha" />
-    <div class="modal-buttons">
-      <button class="btn-secondary" onclick="cerrarModalBond()">Cancelar</button>
-      <button class="btn-primary" onclick="guardarBond()">Guardar</button>
-    </div>
-  </div>
-</div>
-
 <footer>
-  <p>⚡️ Elysian Progress Tracker v3.0 • Última actualización: 20 de febrero de 2026</p>
+  <p>⚔️ OSRS Tracker v2.0 • Proyecto Moto/PC • Última actualización: 20 de febrero de 2026</p>
 </footer>
 
 <script>
   let state = {
-    projectName: "⚔️ Elysian Progress",
+    projectName: "Proyecto Moto/PC",
     nextId: 12,
     farmeo: [],
     objetivos: [],
@@ -377,7 +344,6 @@
   const diasPorPagina = 31;
   let mesActualGrafica = new Date();
   let editandoFarmeoId = null;
-  let ultimaActualizacionTasas = {}; // {tasaGP: {fecha, hora}, tasaBCV: {fecha, hora}, tasaBinance: {fecha, hora}}
 
   const preciosPurples = {
     'scythe': 1600, 'sang': 19.6, 'justiciar_face': 0.18, 'justiciar_body': 0.25,
@@ -409,41 +375,13 @@
         console.error("❌ Error cargando datos:", e);
       }
     }
-    const savedTimestamps = localStorage.getItem('osrs_tracker_timestamps');
-    if (savedTimestamps) {
-      ultimaActualizacionTasas = JSON.parse(savedTimestamps);
-    } else {
-      registrarTimestamp('tasaBCV');
-      registrarTimestamp('tasaBinance');
-      registrarTimestamp('tasaGP');
-    }
     tasaBCVActual = state.tasaBCV;
     tasaBinanceActual = state.tasaBinance;
   }
 
-  // ACTUALIZAR HORA EN TIEMPO REAL
-  function actualizarHora() {
-    const ahora = new Date();
-    let horas = ahora.getHours();
-    const minutos = String(ahora.getMinutes()).padStart(2, '0');
-    const segundos = String(ahora.getSeconds()).padStart(2, '0');
-    const ampm = horas >= 12 ? 'PM' : 'AM';
-    horas = horas % 12;
-    horas = horas ? horas : 12;
-    const horasStr = String(horas).padStart(2, '0');
-    const horaFormato = `${horasStr}:${minutos}:${segundos} ${ampm}`;
-    document.querySelectorAll('.tasa-mini-hora').forEach(el => {
-      el.textContent = horaFormato;
-    });
-  }
-
   function formatFecha(f) {
-    const [year, month, day] = f.split('-');
-    return `${day}/${month}/${year}`;
-  }
-
-  function formatGP(num) {
-    return num.toLocaleString('es-VE', {maximumFractionDigits: 1});
+    const d = new Date(f + 'T00:00:00Z');
+    return d.toLocaleDateString('es-VE');
   }
 
   function actualizarTotales() {
@@ -451,47 +389,40 @@
     state.farmeo.forEach(d => totalGP += d.gp);
     const promedio = state.farmeo.length > 0 ? totalGP / state.farmeo.length : 0;
     const usd = totalGP * state.tasaGP;
-    document.getElementById('totalGenerado').textContent = formatGP(totalGP) + ' m';
-    document.getElementById('promedioDiario').textContent = formatGP(promedio) + ' m';
+    document.getElementById('totalGenerado').textContent = totalGP.toFixed(1) + ' m';
+    document.getElementById('promedioDiario').textContent = promedio.toFixed(1) + ' m';
     document.getElementById('totalDias').textContent = state.farmeo.length;
     document.getElementById('valorBank').textContent = '$' + usd.toFixed(2);
   }
 
   // TASAS EN HEADER
   function renderHeaderTasas() {
-    const bcvTime = ultimaActualizacionTasas.tasaBCV?.hora || '--:--:-- AM';
-    const binanceTime = ultimaActualizacionTasas.tasaBinance?.hora || '--:--:-- AM';
-    const gpTime = ultimaActualizacionTasas.tasaGP?.hora || '--:--:-- AM';
     const html = `
-      <div class="tasa-mini" onclick="abrirModalTasaGP()" style="cursor: pointer;">
+      <div class="tasa-mini">
         <div class="tasa-mini-label">BCV</div>
         <div class="tasa-mini-value">${tasaBCVActual.toFixed(2)}</div>
-        <div class="tasa-mini-hora" id="hora-display">${bcvTime}</div>
       </div>
       <div class="tasa-mini">
         <div class="tasa-mini-label">Binance P2P</div>
         <div class="tasa-mini-value">${tasaBinanceActual.toFixed(2)}</div>
-        <div class="tasa-mini-hora">${binanceTime}</div>
       </div>
       <div class="tasa-mini" onclick="abrirModalTasaGP()" style="cursor: pointer;">
         <div class="tasa-mini-label">GP/USD</div>
         <div class="tasa-mini-value">${state.tasaGP.toFixed(5)}</div>
-        <div class="tasa-mini-hora">${gpTime}</div>
       </div>
     `;
     document.getElementById('headerTasas').innerHTML = html;
-    actualizarHora();
   }
 
   // BANK
   function renderBank() {
-    document.getElementById('bankGP').textContent = state.bankActualGP.toLocaleString('es-VE', {maximumFractionDigits: 1}) + ' m';
-    const usd_binance = state.bankActualGP * state.tasaGP;
-    const bs_binance = usd_binance * tasaBinanceActual;
+    document.getElementById('bankGP').textContent = state.bankActualGP.toFixed(1) + ' m';
     const usd_bcv = state.bankActualGP * state.tasaGP;
+    const usd_binance = state.bankActualGP * state.tasaGP;
     const bs_bcv = usd_bcv * tasaBCVActual;
+    const bs_binance = usd_binance * tasaBinanceActual;
     document.getElementById('bankResumen').textContent = 
-      bs_binance.toLocaleString('es-VE', {maximumFractionDigits: 0}) + ' Bs (Binance) • $' + usd_binance.toFixed(2) + ' Binance • $' + usd_bcv.toFixed(2) + ' BCV';
+      bs_bcv.toFixed(0) + ' Bs (BCV) • $' + usd_bcv.toFixed(2) + ' BCV • $' + usd_binance.toFixed(2) + ' Binance';
   }
 
   function abrirModalBank() {
@@ -528,25 +459,13 @@
     const val = parseFloat(document.getElementById('inputTasaGP').value);
     if (!isNaN(val) && val > 0) {
       state.tasaGP = val;
-      const ahora = new Date();
-      let horas = ahora.getHours();
-      const minutos = String(ahora.getMinutes()).padStart(2, '0');
-      const segundos = String(ahora.getSeconds()).padStart(2, '0');
-      const ampm = horas >= 12 ? 'PM' : 'AM';
-      horas = horas % 12;
-      horas = horas ? horas : 12;
-      const horasStr = String(horas).padStart(2, '0');
-      const fecha = ahora.toISOString().split('T')[0];
-      const hora = `${horasStr}:${minutos}:${segundos} ${ampm}`;
-      ultimaActualizacionTasas.tasaGP = { fecha, hora };
-      localStorage.setItem('osrs_tracker_timestamps', JSON.stringify(ultimaActualizacionTasas));
       guardarDatos();
       renderHeaderTasas();
       renderBank();
       actualizarTotales();
       renderMetas();
       cerrarModalTasaGP();
-      console.log('✅ Tasa GP actualizada a:', val, 'a las', hora);
+      console.log('✅ Tasa GP actualizada a:', val);
     } else {
       alert('Por favor ingresa un valor válido mayor a 0');
     }
@@ -615,7 +534,7 @@
     }
 
     state.farmeo.push({ id: state.nextId++, fecha, gp, tob, notas });
-    state.farmeo.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+    state.farmeo.sort((a, b) => new Date(a.fecha + 'T00:00:00Z') - new Date(b.fecha + 'T00:00:00Z'));
     guardarDatos();
     renderFarmeo();
     cerrarModalFarmeo();
@@ -641,10 +560,12 @@
     if (!editandoFarmeoId) return;
     const dia = state.farmeo.find(d => d.id === editandoFarmeoId);
     if (!dia) return;
+
     dia.fecha = document.getElementById('editFarmeoFecha').value;
     dia.gp = parseFloat(document.getElementById('editFarmeoGP').value) || 0;
     dia.tob = parseInt(document.getElementById('editFarmeoToB').value) || 0;
     dia.notas = document.getElementById('editFarmeoNotas').value;
+
     state.farmeo.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
     guardarDatos();
     renderFarmeo();
@@ -652,13 +573,12 @@
   }
 
   function renderFarmeo() {
-    const inicio = (paginaActualFarmeo - 1) * diasPorPagina;
-    const fin = inicio + diasPorPagina;
-    const diasPag = state.farmeo.slice(inicio, fin);
-    const totalPags = Math.ceil(state.farmeo.length / diasPorPagina) || 1;
-
     const tbody = document.getElementById('farmeoBody');
     tbody.innerHTML = '';
+
+    const totalPags = Math.ceil(state.farmeo.length / diasPorPagina) || 1;
+    const inicio = (paginaActualFarmeo - 1) * diasPorPagina;
+    const diasPag = state.farmeo.slice(inicio, inicio + diasPorPagina);
 
     diasPag.forEach(dia => {
       const idx = state.farmeo.indexOf(dia) + 1;
@@ -666,7 +586,7 @@
       tr.innerHTML = `
         <td>${idx}</td>
         <td>${formatFecha(dia.fecha)}</td>
-        <td class="gp-cell" onclick="abrirModalEditarFarmeo(${dia.id})">${formatGP(dia.gp)} / 15-20m</td>
+        <td class="gp-cell" onclick="abrirModalEditarFarmeo(${dia.id})">${dia.gp.toFixed(1)} / 15-20m</td>
         <td>${dia.tob || 0} / 5</td>
         <td>${dia.notas.includes('[') ? '💎' : '—'}</td>
         <td title="${dia.notas}" style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${dia.notas}</td>
@@ -703,21 +623,17 @@
     }
   }
 
-  // GRÁFICA DUAL (GP + ToB)
+  // GRÁFICA
   function renderGrafica() {
     const mes = mesActualGrafica.getMonth();
     const año = mesActualGrafica.getFullYear();
     const dias = state.farmeo.filter(d => {
-      const f = new Date(d.fecha);
-      return f.getMonth() === mes && f.getFullYear() === año;
+      const f = new Date(d.fecha + 'T00:00:00Z');
+      return f.getUTCMonth() === mes && f.getUTCFullYear() === año;
     });
 
-    const labels = dias.map(d => {
-      const fecha = new Date(d.fecha);
-      return 'D' + fecha.getDate();
-    });
-    const datosGP = dias.map(d => d.gp);
-    const datosToB = dias.map(d => d.tob || 0);
+    const labels = dias.map(d => 'D' + new Date(d.fecha + 'T00:00:00Z').getUTCDate());
+    const datos = dias.map(d => d.gp);
 
     const ctx = document.getElementById('farmeoChart');
     if (!ctx) return;
@@ -727,35 +643,34 @@
       type: 'bar',
       data: {
         labels,
-        datasets: [
-          {
-            label: 'GP Farmeado (m)',
-            data: datosGP,
-            backgroundColor: '#d4af37',
-            borderColor: '#e8c547',
-            borderWidth: 2,
-            yAxisID: 'y'
-          },
-          {
-            label: 'ToB Completadas',
-            data: datosToB,
-            backgroundColor: '#a78bfa',
-            borderColor: '#c4b5fd',
-            borderWidth: 2,
-            yAxisID: 'y1'
-          }
-        ]
+        datasets: [{
+          label: 'GP Farmeado',
+          data: datos,
+          backgroundColor: '#d4af37',
+          borderColor: '#e8c547',
+          borderWidth: 2
+        }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        scales: {
-          y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'GP (millones)' } },
-          y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'ToB' }, grid: { drawOnChartArea: false } }
-        }
+        plugins: { legend: { display: true, labels: { color: '#2d2416' } } },
+        scales: { y: { beginAtZero: true, ticks: { color: '#2d2416' }, grid: { color: '#e8e3dd' } }, x: { ticks: { color: '#2d2416' }, grid: { color: '#e8e3dd' } } }
       }
     });
+
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    document.getElementById('mesActual').textContent = meses[mes] + ' ' + año;
+  }
+
+  function mesAnterior() {
+    mesActualGrafica.setMonth(mesActualGrafica.getMonth() - 1);
+    renderGrafica();
+  }
+
+  function mesSiguiente() {
+    mesActualGrafica.setMonth(mesActualGrafica.getMonth() + 1);
+    renderGrafica();
   }
 
   // METAS
@@ -791,8 +706,8 @@
       } else {
         html += `
           <div class="objetivo-values">
-            <span>Actual: <strong contenteditable="true" onblur="editarActualMeta(${obj.id}, this.textContent)">${formatGP(obj.actual)}</strong> m</span>
-            <span>Meta: <strong>${formatGP(metaGP)}</strong> m</span>
+            <span>Actual: <strong contenteditable="true" onblur="editarActualMeta(${obj.id}, this.textContent)">${obj.actual.toFixed(2)}</strong> m</span>
+            <span>Meta: <strong>${metaGP.toFixed(2)}</strong> m</span>
           </div>
           <div style="font-size: 0.75rem; color: #6b7280;">📅 ${obj.plazo}</div>
         `;
@@ -816,7 +731,7 @@
   }
 
   function eliminarObjetivo(id) {
-    if (confirm('¿Eliminar este objetivo?')) {
+    if (confirm('Eliminar este objetivo?')) {
       state.objetivos = state.objetivos.filter(o => o.id !== id);
       guardarDatos();
       renderMetas();
@@ -894,7 +809,7 @@
 
     state.pagos.forEach(pago => {
       const hoy = new Date();
-      const limite = new Date(pago.fechaLimite);
+      const limite = new Date(pago.fechaLimite + 'T00:00:00Z');
       let monto = pago.monto;
       let estado = pago.estado;
       let color = '#fef3c7';
@@ -933,7 +848,7 @@
     const pago = state.pagos.find(p => p.id === id);
     if (pago) {
       if (pago.estado === 'Pendiente') {
-        const limite = new Date(pago.fechaLimite);
+        const limite = new Date(pago.fechaLimite + 'T00:00:00Z');
         const hoy = new Date();
         if (limite < hoy) {
           pago.estado = 'Mora';
@@ -949,107 +864,19 @@
 
   // MEMBRESÍA
   function renderMembresia() {
-    const div = document.getElementById('membresia');
-    if (!state.membresia.fechaCompra) {
-      div.innerHTML = '<button class="btn-primary" onclick="abrirModalBond()" style="width: 100%;">➕ Registrar Bond</button>';
-      return;
-    }
-    const fechaVencimiento = new Date(state.membresia.fechaVencimiento);
+    if (!state.membresia.fechaCompra) return;
+    const fechaVencimiento = new Date(state.membresia.fechaVencimiento + 'T00:00:00Z');
     const hoy = new Date();
     let diasRestantes = Math.ceil((fechaVencimiento - hoy) / (1000 * 60 * 60 * 24));
-    
-    let html = `<div class="membresia-card">
-      <div class="membresia-label">🔑 Membresía Activa</div>
-      <div class="membresia-value">${diasRestantes} días restantes</div>
-      <div style="font-size: 0.85rem;">Comprada: ${formatFecha(state.membresia.fechaCompra)}</div>
-      <div style="font-size: 0.85rem;">Vence: ${formatFecha(state.membresia.fechaVencimiento)}</div>
-      <button class="btn-secondary" onclick="abrirModalBond()" style="width: 100%; margin-top: 0.5rem;">Renovar Bond (14 días)</button>`;
-    
+    if (diasRestantes < 0) diasRestantes = 0;
+
+    document.getElementById('diasRestantes').textContent = diasRestantes;
+    const warning = document.getElementById('membresia-warning');
     if (diasRestantes <= 7) {
-      html += `<div class="membresia-warning">⚠️ ¡Membresía venciendo pronto! Renueva antes del ${formatFecha(state.membresia.fechaVencimiento)}</div>`;
-    }
-    
-    html += '</div>';
-    div.innerHTML = html;
-  }
-
-  function abrirModalBond() {
-    const hoy = new Date().toISOString().split('T')[0];
-    document.getElementById('bondFecha').value = hoy;
-    document.getElementById('modalBond').classList.add('active');
-  }
-
-  function cerrarModalBond() {
-    document.getElementById('modalBond').classList.remove('active');
-  }
-
-  function guardarBond() {
-    const fecha = document.getElementById('bondFecha').value;
-    if (!fecha) { alert('Selecciona una fecha'); return; }
-    const fechaCompra = new Date(fecha);
-    const fechaVencimiento = new Date(fechaCompra.getTime() + (14 * 24 * 60 * 60 * 1000));
-    state.membresia = {
-      fechaCompra: fecha,
-      fechaVencimiento: fechaVencimiento.toISOString().split('T')[0]
-    };
-    guardarDatos();
-    renderMembresia();
-    cerrarModalBond();
-  }
-
-  // BUSCADOR DE ITEMS
-  async function buscarItem() {
-    const query = document.getElementById('searchInput').value.trim();
-    if (!query) {
-      document.getElementById('searchResults').innerHTML = '';
-      return;
-    }
-
-    document.getElementById('searchResults').innerHTML = '<p style="text-align: center;">🔍 Buscando items...</p>';
-
-    try {
-      const response = await fetch('https://prices.runescape.wiki/api/v1/osrs/latest');
-      const data = await response.json();
-      
-      if (!data.data) {
-        document.getElementById('searchResults').innerHTML = '<p style="text-align: center;">❌ No se encontraron items</p>';
-        return;
-      }
-
-      const filtered = Object.entries(data.data).filter(([id, item]) => 
-        item.name && item.name.toLowerCase().includes(query.toLowerCase())
-      ).slice(0, 12);
-
-      if (filtered.length === 0) {
-        document.getElementById('searchResults').innerHTML = '<p style="text-align: center;">❌ No se encontraron items con ese nombre</p>';
-        return;
-      }
-
-      const html = filtered.map(([id, item]) => {
-        const precioUSD = (item.price || 0) * state.tasaGP;
-        const margen = item.buy_price && item.sell_price ? 
-          (((item.sell_price - item.buy_price) / item.buy_price) * 100).toFixed(1) : 'N/A';
-        
-        return `
-          <div class="item-card">
-            <div class="item-icon">💎</div>
-            <div class="item-name">${item.name}</div>
-            <div class="item-price">${(item.price || 0).toLocaleString()} GP</div>
-            <div class="item-price">$${precioUSD.toFixed(2)}</div>
-            <div class="item-details">
-              Compra: ${(item.buy_price || 0).toLocaleString()} GP<br>
-              Venta: ${(item.sell_price || 0).toLocaleString()} GP
-            </div>
-            ${margen !== 'N/A' ? `<div class="item-margin">Margen: ${margen}%</div>` : ''}
-            <div class="item-drop">ID: ${item.id}</div>
-          </div>
-        `;
-      }).join('');
-
-      document.getElementById('searchResults').innerHTML = html;
-    } catch (e) {
-      console.error('Error buscando items:', e);
-      document.getElementById('searchResults').innerHTML = '<p style="text-align: center;">❌ Error al buscar items</p>';
+      warning.style.display = 'block';
+      warning.textContent = `⚠️ ${diasRestantes} días para renovar (vence ${formatFecha(state.membresia.fechaVencimiento)})`;
+    } else {
+      warning.style.display = 'none';
     }
   }
 
@@ -1063,13 +890,6 @@
     renderPagos();
     renderMembresia();
     document.getElementById('projectTitle').textContent = state.projectName;
-    
-    // Actualizar hora cada segundo
-    setInterval(actualizarHora, 1000);
-    
-    // Cambiar evento de purple
-    document.getElementById('farmeoPurple').addEventListener('change', togglePurpleInput);
-    
     console.log("✅ Aplicación inicializada");
   }
 
