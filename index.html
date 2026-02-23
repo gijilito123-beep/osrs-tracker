@@ -200,12 +200,11 @@
 <div id="modalFarmeo" class="modal"><div class="modal-content"><h2 id="modalFarmeoTitle">Añadir Farmeo</h2><input type="date" id="farmeoFecha" /><input type="number" id="farmeoGP" placeholder="GP (m)" /><input type="number" id="farmeoToB" placeholder="ToB" /><textarea id="farmeoNotas" placeholder="Notas"></textarea><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalFarmeo')">Cancelar</button><button class="btn-primary" onclick="guardarFarmeo()">Guardar</button></div></div></div>
 <div id="modalNuevoObjetivo" class="modal"><div class="modal-content"><h2>Nuevo Objetivo</h2><input type="text" id="objNombre" placeholder="Nombre" /><input type="number" id="objMeta" placeholder="Meta" /><select id="objTipo"><option value="general">General (GP)</option><option value="moto">Moto ($)</option><option value="pc">PC ($)</option></select><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalNuevoObjetivo')">Cancelar</button><button class="btn-primary" onclick="guardarNuevoObjetivo()">Guardar</button></div></div></div>
 
-<footer><p>⚔️ Elysian Progress Tracker v3.3 • 2026</p></footer>
+<footer><p>⚔️ Elysian Progress Tracker v3.4 • 2026</p></footer>
 
 <script>
   let state = {
     projectName: "⚔️ Elysian Progress",
-    nextId: 1,
     farmeo: [],
     objetivos: [],
     tasaGPUSD: 0.0002,
@@ -215,7 +214,7 @@
     bankActualGP: 0,
     pagos: [],
     membresia: {},
-    timestamps: {}
+    timestamps: { tasaBCV: "--:--:-- --", tasaBinance: "--:--:-- --", tasaGP: "--:--:-- --" }
   };
 
   let chartFarmeo = null;
@@ -268,14 +267,35 @@
       const res = await fetch("data.json?t=" + Date.now());
       if (res.ok) {
         const data = await res.json();
-        state = { ...state, ...data };
+        state.farmeo = data.farmeo || [];
+        state.objetivos = data.objetivos || [];
+        state.pagos = data.pagos || [];
+        state.membresia = data.membresia || {};
+        state.projectName = data.projectName || state.projectName;
+        state.bankActualGP = parseFloat(data.bankActualGP) || 0;
+        state.tasaGPUSD = parseFloat(data.tasaGP) || 0.0002;
+        state.tasaBCV = parseFloat(data.tasaBCV) || 402.33;
+        state.tasaBinance = parseFloat(data.tasaBinance) || 583;
       }
-    } catch(e) {}
+    } catch(e) { console.log('Error cargando data.json'); }
+    
     const saved = localStorage.getItem('osrs_tracker_v3');
     if (saved) {
-      const local = JSON.parse(saved);
-      state = { ...state, ...local };
+      try {
+        const local = JSON.parse(saved);
+        if(local.farmeo && Array.isArray(local.farmeo)) state.farmeo = local.farmeo;
+        if(local.objetivos && Array.isArray(local.objetivos)) state.objetivos = local.objetivos;
+        if(local.pagos && Array.isArray(local.pagos)) state.pagos = local.pagos;
+        if(local.membresia && typeof local.membresia === 'object') state.membresia = local.membresia;
+        if(local.projectName) state.projectName = local.projectName;
+        if(local.bankActualGP !== undefined) state.bankActualGP = parseFloat(local.bankActualGP);
+        if(local.tasaGPUSD) state.tasaGPUSD = parseFloat(local.tasaGPUSD);
+        if(local.tasaGPBS) state.tasaGPBS = parseFloat(local.tasaGPBS);
+        if(local.timestamps) state.timestamps = local.timestamps;
+      } catch(e) { console.log('Error leyendo localStorage'); }
     }
+    
+    if(!state.timestamps) state.timestamps = {};
     if(!state.timestamps.tasaBCV) state.timestamps.tasaBCV = getHora12();
     if(!state.timestamps.tasaBinance) state.timestamps.tasaBinance = getHora12();
     if(!state.timestamps.tasaGP) state.timestamps.tasaGP = getHora12();
@@ -484,6 +504,15 @@
     }
     state.farmeo.sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
     renderFarmeo(); guardarDatos(); cerrarModal('modalFarmeo');
+  }
+  function abrirModalFarmeo() {
+    editandoFarmeoId = null;
+    document.getElementById('modalFarmeoTitle').textContent = 'Añadir Farmeo';
+    document.getElementById('farmeoFecha').value = '';
+    document.getElementById('farmeoGP').value = '';
+    document.getElementById('farmeoToB').value = '';
+    document.getElementById('farmeoNotas').value = '';
+    abrirModal('modalFarmeo');
   }
   function editarFarmeo(id) {
     const item = state.farmeo.find(x => x.id === id);
