@@ -91,6 +91,11 @@
   <div class="header-top">
     <h1 id="projectTitle" onclick="abrirModalTitulo()">⚔️ Elysian Progress</h1>
     <div class="header-tasas" id="headerTasas"></div>
+    <div class="tasa-mini" style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3);">
+      <div class="tasa-mini-label">Binance P2P</div>
+      <div class="tasa-mini-value" id="tasaBinanceDisplay">583</div>
+      <div class="tasa-mini-hora" id="tasaBinanceHora">--:--:-- --</div>
+    </div>
     <div class="reloj-actual" id="relojActual">00:00:00 AM</div>
   </div>
   <div class="header-info">
@@ -292,6 +297,8 @@
       </div>
     `;
     document.getElementById('headerTasas').innerHTML = html;
+    document.getElementById('tasaBinanceDisplay').textContent = state.tasaBinance.toFixed(2);
+    document.getElementById('tasaBinanceHora').textContent = state.timestamps.tasaBinance;
   }
 
   function renderBank() {
@@ -429,12 +436,19 @@
       const d = await r.json();
       const mapRes = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping');
       const map = await mapRes.json();
-      const filtered = map.filter(i => i.name.toLowerCase().includes(q.toLowerCase())).slice(0, 10);
+      const filtered = map.filter(i => i.name.toLowerCase().includes(q.toLowerCase()) && i.tradeable).slice(0, 10);
       res.innerHTML = filtered.map(i => {
-        const p = d.data[i.id]?.high || 0;
-        const usd = p * state.tasaGPUSD;
-        return `<div class="item-card"><div class="item-name">${i.name}</div><div class="item-price">${formatGP(p/1000000)} m</div><div class="item-price">$${usd.toFixed(2)}</div></div>`;
+        const high = d.data[i.id]?.high || 0;
+        const low = d.data[i.id]?.low || 0;
+        const totalUSD = high * state.tasaGPUSD;
+        return `<div class="item-card">
+          <div class="item-name">${i.name}</div>
+          <div class="item-details">Compra: ${formatGP(low/1000000)} m</div>
+          <div class="item-details">Venta: ${formatGP(high/1000000)} m</div>
+          <div class="item-price">Total: $${totalUSD.toFixed(2)}</div>
+        </div>`;
       }).join('');
+      if(filtered.length === 0) res.innerHTML = '<p style="text-align:center;color:#999;">No se encontraron items tradeables</p>';
     } catch(e) { res.innerHTML = 'Error al buscar'; }
   }
 
