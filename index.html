@@ -76,7 +76,6 @@
     .item-name { font-weight: 700; color: #1a1410; margin-bottom: 0.3rem; }
     .item-price { color: #d4af37; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.2rem; }
     .item-details { font-size: 0.8rem; color: #6b7280; margin-bottom: 0.3rem; }
-    .item-margin { padding: 0.3rem 0.6rem; background: #d1fae5; color: #065f46; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
     footer { background: #1a1410; color: #d4af37; text-align: center; padding: 1rem; margin-top: 2rem; font-size: 0.8rem; border-top: 2px solid #d4af37; }
     @media (max-width: 768px) {
       .header-top { flex-direction: column; align-items: flex-start; }
@@ -199,9 +198,9 @@
 <div id="modalTasaGP" class="modal"><div class="modal-content"><h2>Editar Tasa m/GP</h2><label>Precio del m en USD (Binance):</label><input type="number" id="inputTasaGPUSD" step="0.00001" /><label>Precio del m en Bs (Binance):</label><input type="number" id="inputTasaGPBS" step="0.01" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalTasaGP')">Cancelar</button><button class="btn-primary" onclick="guardarTasaGP()">Guardar</button></div></div></div>
 <div id="modalBond" class="modal"><div class="modal-content"><h2>Registrar Bond</h2><input type="date" id="bondFecha" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalBond')">Cancelar</button><button class="btn-primary" onclick="guardarBond()">Guardar</button></div></div></div>
 <div id="modalFarmeo" class="modal"><div class="modal-content"><h2 id="modalFarmeoTitle">Añadir Farmeo</h2><input type="date" id="farmeoFecha" /><input type="number" id="farmeoGP" placeholder="GP (m)" /><input type="number" id="farmeoToB" placeholder="ToB" /><textarea id="farmeoNotas" placeholder="Notas"></textarea><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalFarmeo')">Cancelar</button><button class="btn-primary" onclick="guardarFarmeo()">Guardar</button></div></div></div>
-<div id="modalNuevoObjetivo" class="modal"><div class="modal-content"><h2>Nuevo Objetivo</h2><input type="text" id="objNombre" placeholder="Nombre" /><input type="number" id="objMeta" placeholder="Meta" /><select id="objTipo"><option value="general">General (GP)</option><option value="moto">Moto ($)</option><option value="pc">PC ($)</option></select><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalNuevoObjetivo')">Cancelar</button><button class="btn-primary" onclick="guardarNuevoObjetivo()">Crear</button></div></div></div>
+<div id="modalNuevoObjetivo" class="modal"><div class="modal-content"><h2>Nuevo Objetivo</h2><input type="text" id="objNombre" placeholder="Nombre" /><input type="number" id="objMeta" placeholder="Meta" /><select id="objTipo"><option value="general">General (GP)</option><option value="moto">Moto ($)</option><option value="pc">PC ($)</option></select><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalNuevoObjetivo')">Cancelar</button><button class="btn-primary" onclick="guardarNuevoObjetivo()">Guardar</button></div></div></div>
 
-<footer><p>⚔️ Elysian Progress Tracker v3.2 • 2026</p></footer>
+<footer><p>⚔️ Elysian Progress Tracker v3.3 • 2026</p></footer>
 
 <script>
   let state = {
@@ -243,20 +242,26 @@
       const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
       if (res.ok) {
         const data = await res.json();
-        state.tasaBCV = data.rates.VES || 402.33;
-        state.timestamps.tasaBCV = getHora12();
+        const ves = parseFloat(data.rates?.VES);
+        if(!isNaN(ves) && ves > 0) {
+          state.tasaBCV = ves;
+          state.timestamps.tasaBCV = getHora12();
+        }
       }
-    } catch(e) { console.log('Error actualizando BCV'); }
+    } catch(e) { console.log('Error BCV'); }
     
     try {
-      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=ves');
+      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd,ves');
       if (res.ok) {
         const data = await res.json();
-        const btcVES = data.bitcoin.ves;
-        state.tasaBinance = btcVES / 60000; // Aproximación USD/VES vía BTC
-        state.timestamps.tasaBinance = getHora12();
+        const ethUSD = parseFloat(data.ethereum?.usd);
+        const ethVES = parseFloat(data.ethereum?.ves);
+        if(!isNaN(ethVES) && !isNaN(ethUSD) && ethUSD > 0) {
+          state.tasaBinance = ethVES / ethUSD;
+          state.timestamps.tasaBinance = getHora12();
+        }
       }
-    } catch(e) { console.log('Error actualizando Binance'); }
+    } catch(e) { console.log('Error Binance'); }
   }
 
   async function cargarDatos() {
@@ -322,7 +327,7 @@
       const div = document.createElement('div');
       div.className = 'objetivo-item';
       div.innerHTML = `
-        <div class="objetivo-header"><span class="objetivo-name">${obj.nombre}</span><span>${pct.toFixed(1)}%</span></div>
+        <div class="objetivo-header"><span class="objetivo-name">${obj.nombre}</span><span>${pct.toFixed(1)}%</span><button class="btn-edit" onclick="editarObjetivo(${obj.id})" style="margin-left:auto;">✏️</button></div>
         <div class="progress-bar"><div class="progress-fill" style="width: ${pct}%"></div></div>
         <div class="objetivo-values">
           <span>Actual: <strong>${formatGP(state.bankActualGP)}</strong> m</span>
@@ -414,13 +419,15 @@
     const ctx = document.getElementById('farmeoChart').getContext('2d');
     if(chartFarmeo) chartFarmeo.destroy();
     const labels = state.farmeo.map(d => formatFecha(d.fecha));
+    const dropPoints = state.farmeo.map(d => d.notas.includes('[') ? d.gp : null);
     chartFarmeo = new Chart(ctx, {
       type: 'bar',
       data: {
         labels,
         datasets: [
           { label: 'GP (m)', data: state.farmeo.map(d => d.gp), backgroundColor: '#d4af37', yAxisID: 'y' },
-          { label: 'ToB', data: state.farmeo.map(d => d.tob), backgroundColor: '#8b5cf6', yAxisID: 'y1' }
+          { label: 'ToB', data: state.farmeo.map(d => d.tob), backgroundColor: '#8b5cf6', yAxisID: 'y1' },
+          { label: 'Drops 💎', data: dropPoints, type: 'scatter', pointRadius: 8, pointBackgroundColor: '#ff6b6b', pointBorderColor: '#fff', pointBorderWidth: 2, yAxisID: 'y' }
         ]
       },
       options: { scales: { y: { position: 'left' }, y1: { position: 'right', grid: { drawOnChartArea: false } } } }
@@ -429,6 +436,7 @@
 
   async function buscarItem() {
     const q = document.getElementById('searchInput').value;
+    if(!q) { document.getElementById('searchResults').innerHTML = ''; return; }
     const res = document.getElementById('searchResults');
     res.innerHTML = 'Buscando...';
     try {
@@ -494,8 +502,28 @@
     const n = document.getElementById('objNombre').value;
     const m = parseFloat(document.getElementById('objMeta').value);
     const t = document.getElementById('objTipo').value;
-    state.objetivos.push({ id: Date.now(), nombre: n, meta: t==='general'?m:0, metaUSD: t!=='general'?m:0, tipo: t });
+    const modal = document.getElementById('modalNuevoObjetivo');
+    if(modal.dataset.editId) {
+      const id = parseInt(modal.dataset.editId);
+      const obj = state.objetivos.find(x => x.id === id);
+      if(obj) { obj.nombre = n; obj.meta = t==='general'?m:0; obj.metaUSD = t!=='general'?m:0; obj.tipo = t; }
+      delete modal.dataset.editId;
+      document.querySelector('#modalNuevoObjetivo h2').textContent = 'Nuevo Objetivo';
+    } else {
+      state.objetivos.push({ id: Date.now(), nombre: n, meta: t==='general'?m:0, metaUSD: t!=='general'?m:0, tipo: t });
+    }
     renderMetas(); guardarDatos(); cerrarModal('modalNuevoObjetivo');
+  }
+  function editarObjetivo(id) {
+    const obj = state.objetivos.find(x => x.id === id);
+    if(obj) {
+      document.getElementById('objNombre').value = obj.nombre;
+      document.getElementById('objMeta').value = obj.meta || obj.metaUSD;
+      document.getElementById('objTipo').value = obj.tipo;
+      document.querySelector('#modalNuevoObjetivo h2').textContent = 'Editar Objetivo';
+      document.getElementById('modalNuevoObjetivo').dataset.editId = id;
+      abrirModal('modalNuevoObjetivo');
+    }
   }
 
   function eliminarDia(id) { state.farmeo = state.farmeo.filter(x => x.id !== id); renderFarmeo(); guardarDatos(); }
