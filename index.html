@@ -47,6 +47,8 @@
     .gp-cell:hover { background: rgba(212, 175, 55, 0.1); }
     .btn-delete { background: #fee2e2; color: #991b1b; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
     .btn-delete:hover { background: #fecaca; }
+    .btn-edit { background: #dbeafe; color: #1e40af; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; margin-right: 0.3rem; }
+    .btn-edit:hover { background: #bfdbfe; }
     .pagination { display: flex; gap: 0.5rem; align-items: center; justify-content: center; margin-top: 1rem; }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
     .modal.active { display: flex; }
@@ -100,10 +102,10 @@
       <div class="info-label">📍 Ubicación</div>
       <div class="info-value">Maturín, VE</div>
     </div>
-    <div class="info-card" onclick="abrirModalBank()" style="cursor: pointer;">
+    <div class="info-card" onclick="abrirModal('modalBank')" style="cursor: pointer;">
       <div class="info-label">💰 Bank Actual</div>
       <div class="info-value" id="bankGP">0 m</div>
-      <div class="info-sub" id="bankResumen">0 Bs • $0 BCV • $0 Binance</div>
+      <div class="info-sub" id="bankResumen">0 Bs • $0 Binance • $0 BCV</div>
     </div>
   </div>
 </div>
@@ -156,7 +158,7 @@
             <th>ToB</th>
             <th>Drop</th>
             <th>Notas</th>
-            <th>Acción</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody id="farmeoBody"></tbody>
@@ -189,12 +191,12 @@
 <!-- MODALES -->
 <div id="modalTitulo" class="modal"><div class="modal-content"><h2>Editar Proyecto</h2><input type="text" id="inputTitulo" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalTitulo')">Cancelar</button><button class="btn-primary" onclick="guardarTitulo()">Guardar</button></div></div></div>
 <div id="modalBank" class="modal"><div class="modal-content"><h2>Editar Bank GP</h2><input type="number" id="inputBankGP" step="0.1" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalBank')">Cancelar</button><button class="btn-primary" onclick="guardarBank()">Guardar</button></div></div></div>
-<div id="modalTasaGP" class="modal"><div class="modal-content"><h2>Editar Tasa GP/USD</h2><input type="number" id="inputTasaGP" step="0.00001" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalTasaGP')">Cancelar</button><button class="btn-primary" onclick="guardarTasaGP()">Guardar</button></div></div></div>
+<div id="modalTasaGP" class="modal"><div class="modal-content"><h2>Editar Tasa m/GP</h2><label>Precio del m en USD (Binance):</label><input type="number" id="inputTasaGPUSD" step="0.00001" /><label>Precio del m en Bs (Binance):</label><input type="number" id="inputTasaGPBS" step="0.01" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalTasaGP')">Cancelar</button><button class="btn-primary" onclick="guardarTasaGP()">Guardar</button></div></div></div>
 <div id="modalBond" class="modal"><div class="modal-content"><h2>Registrar Bond</h2><input type="date" id="bondFecha" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalBond')">Cancelar</button><button class="btn-primary" onclick="guardarBond()">Guardar</button></div></div></div>
-<div id="modalFarmeo" class="modal"><div class="modal-content"><h2>Añadir Farmeo</h2><input type="date" id="farmeoFecha" /><input type="number" id="farmeoGP" placeholder="GP (m)" /><input type="number" id="farmeoToB" placeholder="ToB" /><textarea id="farmeoNotas" placeholder="Notas"></textarea><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalFarmeo')">Cancelar</button><button class="btn-primary" onclick="guardarFarmeo()">Guardar</button></div></div></div>
+<div id="modalFarmeo" class="modal"><div class="modal-content"><h2 id="modalFarmeoTitle">Añadir Farmeo</h2><input type="date" id="farmeoFecha" /><input type="number" id="farmeoGP" placeholder="GP (m)" /><input type="number" id="farmeoToB" placeholder="ToB" /><textarea id="farmeoNotas" placeholder="Notas"></textarea><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalFarmeo')">Cancelar</button><button class="btn-primary" onclick="guardarFarmeo()">Guardar</button></div></div></div>
 <div id="modalNuevoObjetivo" class="modal"><div class="modal-content"><h2>Nuevo Objetivo</h2><input type="text" id="objNombre" placeholder="Nombre" /><input type="number" id="objMeta" placeholder="Meta" /><select id="objTipo"><option value="general">General (GP)</option><option value="moto">Moto ($)</option><option value="pc">PC ($)</option></select><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalNuevoObjetivo')">Cancelar</button><button class="btn-primary" onclick="guardarNuevoObjetivo()">Crear</button></div></div></div>
 
-<footer><p>⚔️ Elysian Progress Tracker v3.1 • 2026</p></footer>
+<footer><p>⚔️ Elysian Progress Tracker v3.2 • 2026</p></footer>
 
 <script>
   let state = {
@@ -202,7 +204,8 @@
     nextId: 1,
     farmeo: [],
     objetivos: [],
-    tasaGP: 0.0002,
+    tasaGPUSD: 0.0002,
+    tasaGPBS: 0.1166,
     tasaBCV: 402.33,
     tasaBinance: 583,
     bankActualGP: 0,
@@ -213,6 +216,7 @@
 
   let chartFarmeo = null;
   let paginaActualFarmeo = 1;
+  let editandoFarmeoId = null;
   const diasPorPagina = 31;
 
   function formatGP(num) { return num.toLocaleString('es-VE', { maximumFractionDigits: 1 }); }
@@ -229,6 +233,27 @@
 
   function guardarDatos() { localStorage.setItem('osrs_tracker_v3', JSON.stringify(state)); }
 
+  async function actualizarTasas() {
+    try {
+      const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      if (res.ok) {
+        const data = await res.json();
+        state.tasaBCV = data.rates.VES || 402.33;
+        state.timestamps.tasaBCV = getHora12();
+      }
+    } catch(e) { console.log('Error actualizando BCV'); }
+    
+    try {
+      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=ves');
+      if (res.ok) {
+        const data = await res.json();
+        const btcVES = data.bitcoin.ves;
+        state.tasaBinance = btcVES / 60000; // Aproximación USD/VES vía BTC
+        state.timestamps.tasaBinance = getHora12();
+      }
+    } catch(e) { console.log('Error actualizando Binance'); }
+  }
+
   async function cargarDatos() {
     try {
       const res = await fetch("data.json?t=" + Date.now());
@@ -242,40 +267,40 @@
       const local = JSON.parse(saved);
       state = { ...state, ...local };
     }
-    // Asegurar timestamps iniciales si no existen
     if(!state.timestamps.tasaBCV) state.timestamps.tasaBCV = getHora12();
     if(!state.timestamps.tasaBinance) state.timestamps.tasaBinance = getHora12();
     if(!state.timestamps.tasaGP) state.timestamps.tasaGP = getHora12();
+    await actualizarTasas();
   }
 
   function renderHeaderTasas() {
     const html = `
       <div class="tasa-mini" onclick="abrirModal('modalTasaGP')">
+        <div class="tasa-mini-label">m/USD</div>
+        <div class="tasa-mini-value">${state.tasaGPUSD.toFixed(5)}</div>
+        <div class="tasa-mini-hora">${state.timestamps.tasaGP}</div>
+      </div>
+      <div class="tasa-mini" onclick="abrirModal('modalTasaGP')">
+        <div class="tasa-mini-label">m/Bs</div>
+        <div class="tasa-mini-value">${state.tasaGPBS.toFixed(2)}</div>
+        <div class="tasa-mini-hora">${state.timestamps.tasaGP}</div>
+      </div>
+      <div class="tasa-mini">
         <div class="tasa-mini-label">BCV</div>
         <div class="tasa-mini-value">${state.tasaBCV.toFixed(2)}</div>
         <div class="tasa-mini-hora">${state.timestamps.tasaBCV}</div>
-      </div>
-      <div class="tasa-mini">
-        <div class="tasa-mini-label">Binance</div>
-        <div class="tasa-mini-value">${state.tasaBinance.toFixed(2)}</div>
-        <div class="tasa-mini-hora">${state.timestamps.tasaBinance}</div>
-      </div>
-      <div class="tasa-mini" onclick="abrirModal('modalTasaGP')">
-        <div class="tasa-mini-label">GP/USD</div>
-        <div class="tasa-mini-value">${state.tasaGP.toFixed(5)}</div>
-        <div class="tasa-mini-hora">${state.timestamps.tasaGP}</div>
       </div>
     `;
     document.getElementById('headerTasas').innerHTML = html;
   }
 
   function renderBank() {
-    const usd = state.bankActualGP * state.tasaGP;
-    const bsBinance = usd * state.tasaBinance;
-    const bsBCV = usd * state.tasaBCV;
+    const bsTotal = state.bankActualGP * state.tasaGPBS;
+    const usdBinance = state.bankActualGP * state.tasaGPUSD;
+    const usdBCV = bsTotal / state.tasaBCV;
     document.getElementById('bankGP').textContent = formatGP(state.bankActualGP) + ' m';
     document.getElementById('bankResumen').textContent = 
-      `${bsBinance.toLocaleString('es-VE', {maximumFractionDigits:0})} Bs • $${usd.toFixed(2)} Binance • $${usd.toFixed(2)} BCV`;
+      `${bsTotal.toLocaleString('es-VE', {maximumFractionDigits:0})} Bs • $${usdBinance.toFixed(2)} Binance • $${usdBCV.toFixed(2)} BCV`;
   }
 
   function renderMetas() {
@@ -284,7 +309,7 @@
     state.objetivos.forEach(obj => {
       let metaGP = obj.meta || 0;
       if (obj.tipo === 'moto' || obj.tipo === 'pc') {
-        metaGP = (obj.metaUSD / state.tasaGP);
+        metaGP = obj.metaUSD / state.tasaGPUSD;
       }
       const pct = Math.min((state.bankActualGP / metaGP) * 100, 100) || 0;
       const div = document.createElement('div');
@@ -315,12 +340,13 @@
         <td>${d.tob || 0}</td>
         <td>${d.notas.includes('[') ? '💎' : '—'}</td>
         <td>${d.notas}</td>
-        <td><button class="btn-delete" onclick="eliminarDia(${d.id})">🗑</button></td>
+        <td><button class="btn-edit" onclick="editarFarmeo(${d.id})">✏️</button><button class="btn-delete" onclick="eliminarDia(${d.id})">🗑</button></td>
       `;
       tbody.appendChild(tr);
     });
     actualizarTotales();
     renderGrafica();
+    document.getElementById('paginaInfo').textContent = `${paginaActualFarmeo}/${Math.ceil(state.farmeo.length/diasPorPagina) || 1}`;
   }
 
   function actualizarTotales() {
@@ -328,7 +354,7 @@
     document.getElementById('totalGenerado').textContent = formatGP(total) + ' m';
     document.getElementById('promedioDiario').textContent = formatGP(state.farmeo.length ? total/state.farmeo.length : 0) + ' m';
     document.getElementById('totalDias').textContent = state.farmeo.length;
-    document.getElementById('valorBank').textContent = '$' + (total * state.tasaGP).toFixed(2);
+    document.getElementById('valorBank').textContent = '$' + (total * state.tasaGPUSD).toFixed(2);
   }
 
   function renderPagos() {
@@ -406,7 +432,7 @@
       const filtered = map.filter(i => i.name.toLowerCase().includes(q.toLowerCase())).slice(0, 10);
       res.innerHTML = filtered.map(i => {
         const p = d.data[i.id]?.high || 0;
-        const usd = p * state.tasaGP;
+        const usd = p * state.tasaGPUSD;
         return `<div class="item-card"><div class="item-name">${i.name}</div><div class="item-price">${formatGP(p/1000000)} m</div><div class="item-price">$${usd.toFixed(2)}</div></div>`;
       }).join('');
     } catch(e) { res.innerHTML = 'Error al buscar'; }
@@ -416,16 +442,39 @@
   function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }
   function guardarTitulo() { state.projectName = document.getElementById('inputTitulo').value; document.getElementById('projectTitle').textContent = state.projectName; guardarDatos(); cerrarModal('modalTitulo'); }
   function guardarBank() { state.bankActualGP = parseFloat(document.getElementById('inputBankGP').value); renderBank(); renderMetas(); guardarDatos(); cerrarModal('modalBank'); }
-  function guardarTasaGP() { state.tasaGP = parseFloat(document.getElementById('inputTasaGP').value); state.timestamps.tasaGP = getHora12(); renderHeaderTasas(); renderBank(); renderMetas(); guardarDatos(); cerrarModal('modalTasaGP'); }
+  function guardarTasaGP() { 
+    state.tasaGPUSD = parseFloat(document.getElementById('inputTasaGPUSD').value);
+    state.tasaGPBS = parseFloat(document.getElementById('inputTasaGPBS').value);
+    state.timestamps.tasaGP = getHora12();
+    renderHeaderTasas(); renderBank(); renderMetas(); guardarDatos(); cerrarModal('modalTasaGP');
+  }
   function guardarBond() { const f = document.getElementById('bondFecha').value; const v = new Date(new Date(f).getTime() + 14*24*60*60*1000).toISOString().split('T')[0]; state.membresia = { fechaCompra: f, fechaVencimiento: v }; renderMembresia(); guardarDatos(); cerrarModal('modalBond'); }
   function guardarFarmeo() { 
     const f = document.getElementById('farmeoFecha').value;
     const g = parseFloat(document.getElementById('farmeoGP').value);
-    const t = parseInt(document.getElementById('farmeoToB').value);
+    const t = parseInt(document.getElementById('farmeoToB').value) || 0;
     const n = document.getElementById('farmeoNotas').value;
-    state.farmeo.push({ id: Date.now(), fecha: f, gp: g, tob: t, notas: n });
+    if(editandoFarmeoId) {
+      const item = state.farmeo.find(x => x.id === editandoFarmeoId);
+      if(item) { item.fecha = f; item.gp = g; item.tob = t; item.notas = n; }
+      editandoFarmeoId = null;
+    } else {
+      state.farmeo.push({ id: Date.now(), fecha: f, gp: g, tob: t, notas: n });
+    }
     state.farmeo.sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
     renderFarmeo(); guardarDatos(); cerrarModal('modalFarmeo');
+  }
+  function editarFarmeo(id) {
+    const item = state.farmeo.find(x => x.id === id);
+    if(item) {
+      editandoFarmeoId = id;
+      document.getElementById('modalFarmeoTitle').textContent = 'Editar Farmeo';
+      document.getElementById('farmeoFecha').value = item.fecha;
+      document.getElementById('farmeoGP').value = item.gp;
+      document.getElementById('farmeoToB').value = item.tob;
+      document.getElementById('farmeoNotas').value = item.notas;
+      abrirModal('modalFarmeo');
+    }
   }
   function guardarNuevoObjetivo() {
     const n = document.getElementById('objNombre').value;
@@ -442,6 +491,10 @@
   async function init() {
     await cargarDatos();
     document.getElementById('projectTitle').textContent = state.projectName;
+    document.getElementById('inputTitulo').value = state.projectName;
+    document.getElementById('inputBankGP').value = state.bankActualGP;
+    document.getElementById('inputTasaGPUSD').value = state.tasaGPUSD;
+    document.getElementById('inputTasaGPBS').value = state.tasaGPBS;
     renderHeaderTasas(); renderBank(); renderFarmeo(); renderMetas(); renderPagos(); renderMembresia();
     setInterval(() => { document.getElementById('relojActual').textContent = getHora12(); }, 1000);
   }
