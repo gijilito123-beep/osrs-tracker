@@ -461,14 +461,25 @@
     const res = document.getElementById('searchResults');
     res.innerHTML = 'Buscando...';
     try {
-      const r = await fetch('https://prices.runescape.wiki/api/v1/osrs/latest');
-      const d = await r.json();
-      const mapRes = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping');
-      const map = await mapRes.json();
-      const filtered = map.filter(i => i.name.toLowerCase().includes(q.toLowerCase()) && i.tradeable).slice(0, 15);
+      const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+      const wikiUrl = 'https://prices.runescape.wiki/api/v1/osrs';
+      
+      const latestRes = await fetch(corsProxy + wikiUrl + '/latest');
+      const latestData = await latestRes.json();
+      
+      const mapRes = await fetch(corsProxy + wikiUrl + '/mapping');
+      const mapData = await mapRes.json();
+      
+      const filtered = mapData.filter(i => i.name.toLowerCase().includes(q.toLowerCase()) && i.tradeable).slice(0, 15);
+      
+      if(filtered.length === 0) {
+        res.innerHTML = '<p style="text-align:center;color:#999;">No se encontraron items tradeables</p>';
+        return;
+      }
+      
       res.innerHTML = filtered.map(i => {
-        const high = d.data[i.id]?.high || 0;
-        const low = d.data[i.id]?.low || 0;
+        const high = latestData.data[i.id]?.high || 0;
+        const low = latestData.data[i.id]?.low || 0;
         const margen = high > 0 ? (((high - low) / high) * 100).toFixed(1) : 0;
         const totalUSD = high * state.tasaGPUSD;
         const totalBs = high * state.tasaGPBS;
@@ -481,8 +492,10 @@
           <div class="item-price">Bs: ${totalBs.toLocaleString('es-VE', {maximumFractionDigits:0})}</div>
         </div>`;
       }).join('');
-      if(filtered.length === 0) res.innerHTML = '<p style="text-align:center;color:#999;">No se encontraron items tradeables</p>';
-    } catch(e) { res.innerHTML = 'Error al buscar'; }
+    } catch(e) { 
+      res.innerHTML = '<p style="text-align:center;color:#ff6b6b;">Error: ' + e.message + '</p>';
+      console.error('Error en búsqueda:', e);
+    }
   }
 
   function abrirModal(id) { document.getElementById(id).classList.add('active'); }
