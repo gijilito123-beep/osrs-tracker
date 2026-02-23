@@ -251,13 +251,12 @@
     } catch(e) { console.log('Error BCV'); }
     
     try {
-      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd,ves');
+      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves');
       if (res.ok) {
         const data = await res.json();
-        const ethUSD = parseFloat(data.ethereum?.usd);
-        const ethVES = parseFloat(data.ethereum?.ves);
-        if(!isNaN(ethVES) && !isNaN(ethUSD) && ethUSD > 0) {
-          state.tasaBinance = ethVES / ethUSD;
+        const usdtVES = parseFloat(data.tether?.ves);
+        if(!isNaN(usdtVES) && usdtVES > 0) {
+          state.tasaBinance = usdtVES;
           state.timestamps.tasaBinance = getHora12();
         }
       }
