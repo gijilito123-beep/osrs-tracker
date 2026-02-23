@@ -198,7 +198,7 @@
 <div id="modalTasaGP" class="modal"><div class="modal-content"><h2>Editar Tasa m/GP</h2><label>Precio del m en USD (Binance):</label><input type="number" id="inputTasaGPUSD" step="0.00001" /><label>Precio del m en Bs (Binance):</label><input type="number" id="inputTasaGPBS" step="0.01" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalTasaGP')">Cancelar</button><button class="btn-primary" onclick="guardarTasaGP()">Guardar</button></div></div></div>
 <div id="modalBond" class="modal"><div class="modal-content"><h2>Registrar Bond</h2><input type="date" id="bondFecha" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalBond')">Cancelar</button><button class="btn-primary" onclick="guardarBond()">Guardar</button></div></div></div>
 <div id="modalFarmeo" class="modal"><div class="modal-content"><h2 id="modalFarmeoTitle">Añadir Farmeo</h2><input type="date" id="farmeoFecha" /><input type="number" id="farmeoGP" placeholder="GP (m)" /><input type="number" id="farmeoToB" placeholder="ToB" /><textarea id="farmeoNotas" placeholder="Notas"></textarea><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalFarmeo')">Cancelar</button><button class="btn-primary" onclick="guardarFarmeo()">Guardar</button></div></div></div>
-<div id="modalNuevoObjetivo" class="modal"><div class="modal-content"><h2>Nuevo Objetivo</h2><input type="text" id="objNombre" placeholder="Nombre" /><input type="number" id="objMeta" placeholder="Meta" /><select id="objTipo"><option value="general">General (GP)</option><option value="moto">Moto ($)</option><option value="pc">PC ($)</option></select><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalNuevoObjetivo')">Cancelar</button><button class="btn-primary" onclick="guardarNuevoObjetivo()">Guardar</button></div></div></div>
+<div id="modalNuevoObjetivo" class="modal"><div class="modal-content"><h2>Nuevo Objetivo</h2><input type="text" id="objNombre" placeholder="Nombre" /><input type="number" id="objMeta" placeholder="Meta" /><label>Tipo de Meta:</label><select id="objTipo"><option value="gp">m (Millones de GP)</option><option value="bcv">$ (Tasa BCV)</option><option value="binance">$ (Tasa Binance)</option></select><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalNuevoObjetivo')">Cancelar</button><button class="btn-primary" onclick="guardarNuevoObjetivo()">Guardar</button></div></div></div>
 
 <footer><p>⚔️ Elysian Progress Tracker v3.4 • 2026</p></footer>
 
@@ -339,14 +339,16 @@
     grid.innerHTML = '<button class="btn-primary" onclick="abrirModal(\'modalNuevoObjetivo\')" style="width: 100%; margin-bottom: 1rem;">➕ Nuevo Objetivo</button>';
     state.objetivos.forEach(obj => {
       let metaGP = obj.meta || 0;
-      if (obj.tipo === 'moto' || obj.tipo === 'pc') {
+      if (obj.tipo === 'bcv') {
+        metaGP = obj.metaUSD / state.tasaGPBS;
+      } else if (obj.tipo === 'binance') {
         metaGP = obj.metaUSD / state.tasaGPUSD;
       }
       const pct = Math.min((state.bankActualGP / metaGP) * 100, 100) || 0;
       const div = document.createElement('div');
       div.className = 'objetivo-item';
       div.innerHTML = `
-        <div class="objetivo-header"><span class="objetivo-name">${obj.nombre}</span><span>${pct.toFixed(1)}%</span><button class="btn-edit" onclick="editarObjetivo(${obj.id})" style="margin-left:auto;">✏️</button></div>
+        <div class="objetivo-header"><span class="objetivo-name">${obj.nombre}</span><span>${pct.toFixed(1)}%</span><button class="btn-edit" onclick="editarObjetivo(${obj.id})" style="margin-left:auto;">✏️</button><button class="btn-delete" onclick="eliminarObjetivo(${obj.id})">🗑</button></div>
         <div class="progress-bar"><div class="progress-fill" style="width: ${pct}%"></div></div>
         <div class="objetivo-values">
           <span>Actual: <strong>${formatGP(state.bankActualGP)}</strong> m</span>
@@ -463,16 +465,20 @@
       const d = await r.json();
       const mapRes = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping');
       const map = await mapRes.json();
-      const filtered = map.filter(i => i.name.toLowerCase().includes(q.toLowerCase()) && i.tradeable).slice(0, 10);
+      const filtered = map.filter(i => i.name.toLowerCase().includes(q.toLowerCase()) && i.tradeable).slice(0, 15);
       res.innerHTML = filtered.map(i => {
         const high = d.data[i.id]?.high || 0;
         const low = d.data[i.id]?.low || 0;
+        const margen = high > 0 ? (((high - low) / high) * 100).toFixed(1) : 0;
         const totalUSD = high * state.tasaGPUSD;
+        const totalBs = high * state.tasaGPBS;
         return `<div class="item-card">
           <div class="item-name">${i.name}</div>
-          <div class="item-details">Compra: ${formatGP(low/1000000)} m</div>
-          <div class="item-details">Venta: ${formatGP(high/1000000)} m</div>
-          <div class="item-price">Total: $${totalUSD.toFixed(2)}</div>
+          <div class="item-details">💰 Compra: ${formatGP(low/1000000)} m</div>
+          <div class="item-details">💵 Venta: ${formatGP(high/1000000)} m</div>
+          <div class="item-details">📊 Margen: ${margen}%</div>
+          <div class="item-price">USD: $${totalUSD.toFixed(2)}</div>
+          <div class="item-price">Bs: ${totalBs.toLocaleString('es-VE', {maximumFractionDigits:0})}</div>
         </div>`;
       }).join('');
       if(filtered.length === 0) res.innerHTML = '<p style="text-align:center;color:#999;">No se encontraron items tradeables</p>';
@@ -534,11 +540,21 @@
     if(modal.dataset.editId) {
       const id = parseInt(modal.dataset.editId);
       const obj = state.objetivos.find(x => x.id === id);
-      if(obj) { obj.nombre = n; obj.meta = t==='general'?m:0; obj.metaUSD = t!=='general'?m:0; obj.tipo = t; }
+      if(obj) { 
+        obj.nombre = n; 
+        obj.tipo = t;
+        if(t === 'gp') { obj.meta = m; obj.metaUSD = 0; }
+        else if(t === 'bcv') { obj.meta = 0; obj.metaUSD = m; obj.tasaUsada = 'bcv'; }
+        else if(t === 'binance') { obj.meta = 0; obj.metaUSD = m; obj.tasaUsada = 'binance'; }
+      }
       delete modal.dataset.editId;
       document.querySelector('#modalNuevoObjetivo h2').textContent = 'Nuevo Objetivo';
     } else {
-      state.objetivos.push({ id: Date.now(), nombre: n, meta: t==='general'?m:0, metaUSD: t!=='general'?m:0, tipo: t });
+      const newObj = { id: Date.now(), nombre: n, tipo: t };
+      if(t === 'gp') { newObj.meta = m; newObj.metaUSD = 0; }
+      else if(t === 'bcv') { newObj.meta = 0; newObj.metaUSD = m; newObj.tasaUsada = 'bcv'; }
+      else if(t === 'binance') { newObj.meta = 0; newObj.metaUSD = m; newObj.tasaUsada = 'binance'; }
+      state.objetivos.push(newObj);
     }
     renderMetas(); guardarDatos(); cerrarModal('modalNuevoObjetivo');
   }
@@ -551,6 +567,12 @@
       document.querySelector('#modalNuevoObjetivo h2').textContent = 'Editar Objetivo';
       document.getElementById('modalNuevoObjetivo').dataset.editId = id;
       abrirModal('modalNuevoObjetivo');
+    }
+  }
+  function eliminarObjetivo(id) {
+    if(confirm('¿Estás seguro de que quieres eliminar este objetivo?')) {
+      state.objetivos = state.objetivos.filter(x => x.id !== id);
+      renderMetas(); guardarDatos();
     }
   }
 
