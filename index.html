@@ -461,10 +461,14 @@
     const res = document.getElementById('searchResults');
     res.innerHTML = 'Buscando...';
     try {
-      const latestRes = await fetch('https://prices.runescape.wiki/api/v1/osrs/latest');
+      const corsProxy = 'https://api.allorigins.win/raw?url=';
+      const latestUrl = encodeURIComponent('https://prices.runescape.wiki/api/v1/osrs/latest');
+      const mapUrl = encodeURIComponent('https://prices.runescape.wiki/api/v1/osrs/mapping');
+      
+      const latestRes = await fetch(corsProxy + latestUrl);
       const latestData = await latestRes.json();
       
-      const mapRes = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping');
+      const mapRes = await fetch(corsProxy + mapUrl);
       const mapData = await mapRes.json();
       
       const filtered = mapData.filter(i => i.name.toLowerCase().includes(q.toLowerCase()) && i.tradeable).slice(0, 15);
