@@ -237,29 +237,27 @@
   function guardarDatos() { localStorage.setItem('osrs_tracker_v3', JSON.stringify(state)); }
 
   async function actualizarTasas() {
+    let bcvOk = false;
     try {
-      const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      const res = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=VES');
       if (res.ok) {
         const data = await res.json();
         const ves = parseFloat(data.rates?.VES);
-        if(!isNaN(ves) && ves > 0) {
-          state.tasaBCV = ves;
-          state.timestamps.tasaBCV = getHora12();
-        }
+        if(!isNaN(ves) && ves > 0) { state.tasaBCV = ves; state.timestamps.tasaBCV = getHora12(); bcvOk = true; }
       }
-    } catch(e) { console.log('Error BCV'); }
+    } catch(e) { console.log('BCV error'); }
     
+    let binanceOk = false;
     try {
       const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves');
       if (res.ok) {
         const data = await res.json();
         const usdtVES = parseFloat(data.tether?.ves);
-        if(!isNaN(usdtVES) && usdtVES > 0) {
-          state.tasaBinance = usdtVES;
-          state.timestamps.tasaBinance = getHora12();
-        }
+        if(!isNaN(usdtVES) && usdtVES > 0) { state.tasaBinance = usdtVES; state.timestamps.tasaBinance = getHora12(); binanceOk = true; }
       }
-    } catch(e) { console.log('Error Binance'); }
+    } catch(e) { console.log('Binance error'); }
+    
+    renderHeaderTasas();
   }
 
   async function cargarDatos() {
