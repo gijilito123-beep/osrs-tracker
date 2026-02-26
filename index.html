@@ -233,6 +233,19 @@
     h = h % 12 || 12;
     return `${String(h).padStart(2, '0')}:${m}:${s} ${ampm}`;
   }
+  
+  function getFechaHora() {
+    const n = new Date();
+    const d = String(n.getDate()).padStart(2, '0');
+    const mo = String(n.getMonth() + 1).padStart(2, '0');
+    const y = n.getFullYear();
+    let h = n.getHours();
+    const mi = String(n.getMinutes()).padStart(2, '0');
+    const s = String(n.getSeconds()).padStart(2, '0');
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${d}/${mo}/${y} ${String(h).padStart(2, '0')}:${mi}:${s} ${ampm}`;
+  }
 
   function guardarDatos() { localStorage.setItem('osrs_tracker_v3', JSON.stringify(state)); }
 
@@ -243,7 +256,7 @@
       if (res.ok) {
         const data = await res.json();
         const ves = parseFloat(data.rates?.VES);
-        if(!isNaN(ves) && ves > 0) { state.tasaBCV = ves; state.timestamps.tasaBCV = getHora12(); bcvOk = true; }
+        if(!isNaN(ves) && ves > 0) { state.tasaBCV = ves; state.timestamps.tasaBCV = getFechaHora(); bcvOk = true; }
       }
     } catch(e) { console.log('BCV error'); }
     
@@ -253,7 +266,7 @@
       if (res.ok) {
         const data = await res.json();
         const usdtVES = parseFloat(data.tether?.ves);
-        if(!isNaN(usdtVES) && usdtVES > 0) { state.tasaBinance = usdtVES; state.timestamps.tasaBinance = getHora12(); binanceOk = true; }
+        if(!isNaN(usdtVES) && usdtVES > 0) { state.tasaBinance = usdtVES; state.timestamps.tasaBinance = getFechaHora(); binanceOk = true; }
       }
     } catch(e) { console.log('Binance error'); }
     
@@ -294,8 +307,8 @@
     }
     
     if(!state.timestamps) state.timestamps = {};
-    if(!state.timestamps.tasaBCV) state.timestamps.tasaBCV = getHora12();
-    if(!state.timestamps.tasaBinance) state.timestamps.tasaBinance = getHora12();
+    if(!state.timestamps.tasaBCV) state.timestamps.tasaBCV = getFechaHora();
+    if(!state.timestamps.tasaBinance) state.timestamps.tasaBinance = getFechaHora();
     if(!state.timestamps.tasaGP) state.timestamps.tasaGP = getHora12();
     await actualizarTasas();
   }
