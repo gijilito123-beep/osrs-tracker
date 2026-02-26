@@ -471,28 +471,11 @@
     if(!q) { document.getElementById('searchResults').innerHTML = ''; return; }
     const res = document.getElementById('searchResults');
     res.innerHTML = 'Buscando...';
-    try {
-      const backendURL = 'https://osrs-proxy-backend-production.up.railway.app/api/search/' + encodeURIComponent(q);
-      const response = await fetch(backendURL);
-      const items = await response.json();
-      
-      if(!items || items.length === 0) {
-        res.innerHTML = '<p style="text-align:center;color:#999;">No se encontraron items tradeables</p>';
-        return;
-      }
-      
-      res.innerHTML = items.map(i => {
-        const high = i.price?.high || 0;
-        const low = i.price?.low || 0;
-        const margen = high > 0 ? (((high - low) / high) * 100).toFixed(1) : 0;
-        const totalUSD = (high / 1000000) * state.tasaGPUSD;
-        const totalBs = (high / 1000000) * state.tasaGPBS;
-        return '<div class="item-card" style="border:1px solid #d4af37;padding:10px;margin:5px;border-radius:5px;background:#f9f9f9;"><div class="item-name" style="font-weight:bold;color:#d4af37;">' + i.name + '</div><div class="item-details" style="margin:5px 0;">💰 Compra: ' + formatGP(low/1000000) + ' m</div><div class="item-details" style="margin:5px 0;">💵 Venta: ' + formatGP(high/1000000) + ' m</div><div class="item-details" style="margin:5px 0;">📊 Margen: ' + margen + '%</div><div class="item-price" style="margin:5px 0;color:#2ecc71;">USD: $' + totalUSD.toFixed(2) + '</div><div class="item-price" style="margin:5px 0;color:#3498db;">Bs: ' + totalBs.toLocaleString('es-VE', {maximumFractionDigits:0}) + '</div></div>';
-      }).join('');
-    } catch(e) { 
-      res.innerHTML = '<p style="text-align:center;color:#ff6b6b;font-weight:bold;">Error: ' + e.message + '</p>';
-      console.error('Error en búsqueda:', e);
-    }
+    let items = null;
+    try { const r = await fetch('https://osrs-proxy-backend-production.up.railway.app/api/search/' + encodeURIComponent(q)); if(r.ok) items = await r.json(); } catch(e) { console.log('Backend falló'); }
+    if(!items) try { const r = await fetch('https://prices.runescape.wiki/api/v1/osrs/search?q=' + encodeURIComponent(q)); if(r.ok) { const d = await r.json(); items = d.items || []; } } catch(e) { console.log('Wiki falló'); }
+    if(!items || items.length === 0) { res.innerHTML = '<p style="text-align:center;color:#999;">No se encontraron items. Intenta de nuevo.</p>'; return; }
+    try { res.innerHTML = items.slice(0, 10).map(i => { const high = i.price?.high || i.examine?.high || 0; const low = i.price?.low || i.examine?.low || 0; const n = i.name || 'Unknown'; const m = high > 0 ? (((high - low) / high) * 100).toFixed(1) : 0; const u = (high / 1000000) * state.tasaGPUSD; const b = (high / 1000000) * state.tasaGPBS; return '<div class="item-card" style="border:1px solid #d4af37;padding:10px;margin:5px;border-radius:5px;background:#f9f9f9;"><div class="item-name" style="font-weight:bold;color:#d4af37;">' + n + '</div><div class="item-details" style="margin:5px 0;">💰 Compra: ' + formatGP(low/1000000) + ' m</div><div class="item-details" style="margin:5px 0;">💵 Venta: ' + formatGP(high/1000000) + ' m</div><div class="item-details" style="margin:5px 0;">📊 Margen: ' + m + '%</div><div class="item-price" style="margin:5px 0;color:#2ecc71;">USD: $' + u.toFixed(2) + '</div><div class="item-price" style="margin:5px 0;color:#3498db;">Bs: ' + b.toLocaleString('es-VE', {maximumFractionDigits:0}) + '</div></div>'; }).join(''); } catch(e) { res.innerHTML = '<p style="text-align:center;color:#ff6b6b;">Error: ' + e.message + '</p>'; }
   }
 
   function abrirModal(id) { document.getElementById(id).classList.add('active'); }
