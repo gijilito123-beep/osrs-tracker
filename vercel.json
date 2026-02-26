@@ -1,0 +1,14 @@
+{
+  "functions": {
+    "api/proxy.js": {
+      "memory": 128,
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/osrs/:path*",
+      "destination": "/api/proxy?path=:path*"
+    }
+  ]
+}

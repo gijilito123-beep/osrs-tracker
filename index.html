@@ -196,7 +196,7 @@
 <div id="modalTitulo" class="modal"><div class="modal-content"><h2>Editar Proyecto</h2><input type="text" id="inputTitulo" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalTitulo')">Cancelar</button><button class="btn-primary" onclick="guardarTitulo()">Guardar</button></div></div></div>
 <div id="modalBank" class="modal"><div class="modal-content"><h2>Editar Bank GP</h2><input type="number" id="inputBankGP" step="0.1" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalBank')">Cancelar</button><button class="btn-primary" onclick="guardarBank()">Guardar</button></div></div></div>
 <div id="modalTasaGP" class="modal"><div class="modal-content"><h2>Editar Tasa m/GP</h2><label>Precio del m en USD (Binance):</label><input type="number" id="inputTasaGPUSD" step="0.00001" /><label>Precio del m en Bs (Binance):</label><input type="number" id="inputTasaGPBS" step="0.01" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalTasaGP')">Cancelar</button><button class="btn-primary" onclick="guardarTasaGP()">Guardar</button></div></div></div>
-<div id="modalBond" class="modal"><div class="modal-content"><h2>Registrar Bond</h2><input type="date" id="bondFecha" /><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalBond')">Cancelar</button><button class="btn-primary" onclick="guardarBond()">Guardar</button></div></div></div>
+<div id="modalBond" class="modal"><div class="modal-content"><h2>Registrar Bond</h2><input type="date" id="bondFecha" /><label>Duración:</label><select id="bondDias"><option value="14">14 días</option><option value="30">30 días (1 mes)</option><option value="60">60 días (2 meses)</option><option value="90">90 días (3 meses)</option><option value="180">180 días (6 meses)</option><option value="365">365 días (1 año)</option></select><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalBond')">Cancelar</button><button class="btn-primary" onclick="guardarBond()">Guardar</button></div></div></div>
 <div id="modalFarmeo" class="modal"><div class="modal-content"><h2 id="modalFarmeoTitle">Añadir Farmeo</h2><input type="date" id="farmeoFecha" /><input type="number" id="farmeoGP" placeholder="GP (m)" /><input type="number" id="farmeoToB" placeholder="ToB" /><textarea id="farmeoNotas" placeholder="Notas"></textarea><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalFarmeo')">Cancelar</button><button class="btn-primary" onclick="guardarFarmeo()">Guardar</button></div></div></div>
 <div id="modalNuevoObjetivo" class="modal"><div class="modal-content"><h2>Nuevo Objetivo</h2><input type="text" id="objNombre" placeholder="Nombre" /><input type="number" id="objMeta" placeholder="Meta" /><label>Tipo de Meta:</label><select id="objTipo"><option value="gp">m (Millones de GP)</option><option value="bcv">$ (Tasa BCV)</option><option value="binance">$ (Tasa Binance)</option></select><div class="modal-buttons"><button class="btn-secondary" onclick="cerrarModal('modalNuevoObjetivo')">Cancelar</button><button class="btn-primary" onclick="guardarNuevoObjetivo()">Guardar</button></div></div></div>
 
@@ -251,25 +251,11 @@
 
   async function actualizarTasas() {
     let bcvOk = false;
-    try {
-      const res = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=VES');
-      if (res.ok) {
-        const data = await res.json();
-        const ves = parseFloat(data.rates?.VES);
-        if(!isNaN(ves) && ves > 0) { state.tasaBCV = ves; state.timestamps.tasaBCV = getFechaHora(); bcvOk = true; }
-      }
-    } catch(e) { console.log('BCV error'); }
-    
+    try { const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD'); if(r.ok) { const d = await r.json(); const v = parseFloat(d.rates?.VES); if(!isNaN(v) && v > 0) { state.tasaBCV = v; state.timestamps.tasaBCV = getFechaHora(); bcvOk = true; } } } catch(e) { }
+    if(!bcvOk) { try { const r = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=VES'); if(r.ok) { const d = await r.json(); const v = parseFloat(d.rates?.VES); if(!isNaN(v) && v > 0) { state.tasaBCV = v; state.timestamps.tasaBCV = getFechaHora(); bcvOk = true; } } } catch(e) { } }
     let binanceOk = false;
-    try {
-      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves');
-      if (res.ok) {
-        const data = await res.json();
-        const usdtVES = parseFloat(data.tether?.ves);
-        if(!isNaN(usdtVES) && usdtVES > 0) { state.tasaBinance = usdtVES; state.timestamps.tasaBinance = getFechaHora(); binanceOk = true; }
-      }
-    } catch(e) { console.log('Binance error'); }
-    
+    try { const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves'); if(r.ok) { const d = await r.json(); const u = parseFloat(d.tether?.ves); if(!isNaN(u) && u > 0) { state.tasaBinance = u; state.timestamps.tasaBinance = getFechaHora(); binanceOk = true; } } } catch(e) { }
+    if(!binanceOk) { try { const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=ves'); if(r.ok) { const d = await r.json(); const u = parseFloat(d['usd-coin']?.ves); if(!isNaN(u) && u > 0) { state.tasaBinance = u; state.timestamps.tasaBinance = getFechaHora(); binanceOk = true; } } } catch(e) { } }
     renderHeaderTasas();
   }
 
@@ -467,15 +453,30 @@
   }
 
   async function buscarItem() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    if(!q) { document.getElementById('searchResults').innerHTML = ''; return; }
+    const q = document.getElementById('searchInput').value.trim();
+    if(!q || q.length < 2) { document.getElementById('searchResults').innerHTML = ''; return; }
     const res = document.getElementById('searchResults');
-    res.innerHTML = 'Buscando...';
-    const itemsDB = {'scythe':{name:'Scythe of Vitur',high:200000000,low:195000000},'sang':{name:'Sang Staff',high:150000000,low:145000000},'tbow':{name:'Twisted Bow',high:1100000000,low:1050000000},'rapier':{name:'Osmumten\'s Fang',high:350000000,low:330000000}};
-    let items = [];
-    for(let k in itemsDB) { if(k.includes(q)) items.push(itemsDB[k]); }
-    if(!items || items.length === 0) { res.innerHTML = '<p style="text-align:center;color:#999;">Items no encontrados en base de datos.</p>'; return; }
-    try { res.innerHTML = items.map(i => { const high = i.high || 0; const low = i.low || 0; const n = i.name || 'Unknown'; const m = high > 0 ? (((high - low) / high) * 100).toFixed(1) : 0; const u = (high / 1000000) * state.tasaGPUSD; const b = (high / 1000000) * state.tasaGPBS; return '<div class="item-card" style="border:1px solid #d4af37;padding:10px;margin:5px;border-radius:5px;background:#f9f9f9;"><div class="item-name" style="font-weight:bold;color:#d4af37;">' + n + '</div><div class="item-details" style="margin:5px 0;">💰 Compra: ' + formatGP(low/1000000) + ' m</div><div class="item-details" style="margin:5px 0;">💵 Venta: ' + formatGP(high/1000000) + ' m</div><div class="item-details" style="margin:5px 0;">📊 Margen: ' + m + '%</div><div class="item-price" style="margin:5px 0;color:#2ecc71;">USD: $' + u.toFixed(2) + '</div><div class="item-price" style="margin:5px 0;color:#3498db;">Bs: ' + b.toLocaleString('es-VE', {maximumFractionDigits:0}) + '</div></div>'; }).join(''); } catch(e) { res.innerHTML = '<p style="text-align:center;color:#ff6b6b;">Error: ' + e.message + '</p>'; }
+    res.innerHTML = 'Buscando en Grand Exchange...';
+    try {
+      const url = 'https://prices.runescape.wiki/api/v1/osrs/search?q=' + encodeURIComponent(q);
+      const response = await fetch(url, {mode: 'no-cors'});
+      const data = await response.text();
+      const parsed = JSON.parse(data);
+      const items = parsed.items || [];
+      if(!items || items.length === 0) { res.innerHTML = '<p style="text-align:center;color:#999;">No se encontraron items tradeables.</p>'; return; }
+      res.innerHTML = items.slice(0, 15).map(i => {
+        const high = i.price?.high || i.examine?.high || 0;
+        const low = i.price?.low || i.examine?.low || 0;
+        const name = i.name || 'Unknown';
+        const margin = high > 0 ? (((high - low) / high) * 100).toFixed(1) : 0;
+        const usd = (high / 1000000) * state.tasaGPUSD;
+        const bs = (high / 1000000) * state.tasaGPBS;
+        return '<div class="item-card" style="border:1px solid #d4af37;padding:10px;margin:5px;border-radius:5px;background:#f9f9f9;"><div class="item-name" style="font-weight:bold;color:#d4af37;">' + name + '</div><div class="item-details" style="margin:5px 0;">💰 Compra: ' + formatGP(low/1000000) + ' m</div><div class="item-details" style="margin:5px 0;">💵 Venta: ' + formatGP(high/1000000) + ' m</div><div class="item-details" style="margin:5px 0;">📊 Margen: ' + margin + '%</div><div class="item-price" style="margin:5px 0;color:#2ecc71;">USD: $' + usd.toFixed(2) + '</div><div class="item-price" style="margin:5px 0;color:#3498db;">Bs: ' + bs.toLocaleString('es-VE', {maximumFractionDigits:0}) + '</div></div>';
+      }).join('');
+    } catch(e) {
+      res.innerHTML = '<p style="text-align:center;color:#ff6b6b;">Error al conectar con Grand Exchange. Intenta de nuevo.</p>';
+      console.log('Error búsqueda:', e);
+    }
   }
 
   function abrirModal(id) { document.getElementById(id).classList.add('active'); }
@@ -488,7 +489,7 @@
     state.timestamps.tasaGP = getHora12();
     renderHeaderTasas(); renderBank(); renderMetas(); guardarDatos(); cerrarModal('modalTasaGP');
   }
-  function guardarBond() { const f = document.getElementById('bondFecha').value; const v = new Date(new Date(f).getTime() + 14*24*60*60*1000).toISOString().split('T')[0]; state.membresia = { fechaCompra: f, fechaVencimiento: v }; renderMembresia(); guardarDatos(); cerrarModal('modalBond'); }
+  function guardarBond() { const f = document.getElementById('bondFecha').value; const d = parseInt(document.getElementById('bondDias').value) || 14; const v = new Date(new Date(f).getTime() + d*24*60*60*1000).toISOString().split('T')[0]; state.membresia = { fechaCompra: f, fechaVencimiento: v, dias: d }; renderMembresia(); guardarDatos(); cerrarModal('modalBond'); }
   function guardarFarmeo() { 
     const f = document.getElementById('farmeoFecha').value;
     const g = parseFloat(document.getElementById('farmeoGP').value);
