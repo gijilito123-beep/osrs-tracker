@@ -479,14 +479,16 @@
     res.innerHTML = 'Buscando en Grand Exchange...';
     try {
       const url = 'https://prices.runescape.wiki/api/v1/osrs/search?q=' + encodeURIComponent(q);
-      const response = await fetch(url, {mode: 'no-cors'});
-      const data = await response.text();
-      const parsed = JSON.parse(data);
+      const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+      const response = await fetch(proxyUrl);
+      if(!response.ok) throw new Error('Proxy error');
+      const proxyData = await response.json();
+      const parsed = JSON.parse(proxyData.contents);
       const items = parsed.items || [];
       if(!items || items.length === 0) { res.innerHTML = '<p style="text-align:center;color:#999;">No se encontraron items tradeables.</p>'; return; }
-      res.innerHTML = items.slice(0, 15).map(i => {
-        const high = i.price?.high || i.examine?.high || 0;
-        const low = i.price?.low || i.examine?.low || 0;
+      res.innerHTML = items.slice(0, 20).map(i => {
+        const high = i.high || 0;
+        const low = i.low || 0;
         const name = i.name || 'Unknown';
         const margin = high > 0 ? (((high - low) / high) * 100).toFixed(1) : 0;
         const usd = (high / 1000000) * state.tasaGPUSD;
