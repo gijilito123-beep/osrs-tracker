@@ -250,12 +250,32 @@
   function guardarDatos() { localStorage.setItem('osrs_tracker_v3', JSON.stringify(state)); }
 
   async function actualizarTasas() {
-    let bcvOk = false;
-    try { const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD'); if(r.ok) { const d = await r.json(); const v = parseFloat(d.rates?.VES); if(!isNaN(v) && v > 0) { state.tasaBCV = v; state.timestamps.tasaBCV = getFechaHora(); bcvOk = true; } } } catch(e) { }
-    if(!bcvOk) { try { const r = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=VES'); if(r.ok) { const d = await r.json(); const v = parseFloat(d.rates?.VES); if(!isNaN(v) && v > 0) { state.tasaBCV = v; state.timestamps.tasaBCV = getFechaHora(); bcvOk = true; } } } catch(e) { } }
-    let binanceOk = false;
-    try { const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves'); if(r.ok) { const d = await r.json(); const u = parseFloat(d.tether?.ves); if(!isNaN(u) && u > 0) { state.tasaBinance = u; state.timestamps.tasaBinance = getFechaHora(); binanceOk = true; } } } catch(e) { }
-    if(!binanceOk) { try { const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=ves'); if(r.ok) { const d = await r.json(); const u = parseFloat(d['usd-coin']?.ves); if(!isNaN(u) && u > 0) { state.tasaBinance = u; state.timestamps.tasaBinance = getFechaHora(); binanceOk = true; } } } catch(e) { } }
+    try {
+      const r = await fetch('https://open.er-api.com/v6/latest/USD');
+      if(r.ok) {
+        const d = await r.json();
+        const v = parseFloat(d.rates?.VES);
+        if(!isNaN(v) && v > 0) {
+          state.tasaBCV = v;
+          state.timestamps.tasaBCV = getFechaHora();
+        }
+      }
+    } catch(e) {
+      console.log('Error BCV:', e);
+    }
+    try {
+      const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves');
+      if(r.ok) {
+        const d = await r.json();
+        const u = parseFloat(d.tether?.ves);
+        if(!isNaN(u) && u > 0) {
+          state.tasaBinance = u;
+          state.timestamps.tasaBinance = getFechaHora();
+        }
+      }
+    } catch(e) {
+      console.log('Error Binance:', e);
+    }
     renderHeaderTasas();
   }
 
