@@ -448,7 +448,8 @@
       <div class="membresia-card">
         <div class="membresia-value">${dias} días restantes</div>
         <div class="membresia-label">Vence: ${formatFecha(state.membresia.fechaVencimiento)}</div>
-        <button class="btn-secondary" onclick="abrirModal(\'modalBond\')" style="margin-top:0.5rem">Renovar (14 días)</button>
+        <button class="btn-secondary" onclick="abrirModal('modalBond')" style="margin-top:0.5rem">Renovar (14 días)</button>
+        <button class="btn-secondary" onclick="deshacerBond()" style="margin-top:0.5rem;background:#fee2e2;color:#991b1b;">↶ Deshacer</button>
       </div>
     `;
   }
