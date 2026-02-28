@@ -1,23 +1,58 @@
 [
   {
-    "name": "Scythe of Vitur",
-    "high": 195000000,
-    "low": 190000000
-  },
-  {
     "name": "Twisted Bow",
     "high": 1200000000,
     "low": 1180000000
   },
   {
-    "name": "Abyssal Whip",
-    "high": 4000000,
-    "low": 3900000
+    "name": "Scythe of Vitur",
+    "high": 195000000,
+    "low": 190000000
   },
   {
-    "name": "Dragon Scimitar",
-    "high": 60000,
-    "low": 50000
+    "name": "Tanzanite Fang",
+    "high": 180000000,
+    "low": 175000000
+  },
+  {
+    "name": "Elysian Spirit Shield",
+    "high": 800000000,
+    "low": 780000000
+  },
+  {
+    "name": "Sanguinesti Staff",
+    "high": 120000000,
+    "low": 115000000
+  },
+  {
+    "name": "Kodai Wand",
+    "high": 25000000,
+    "low": 24000000
+  },
+  {
+    "name": "Primordial Boots",
+    "high": 80000000,
+    "low": 78000000
+  },
+  {
+    "name": "Pegasian Boots",
+    "high": 70000000,
+    "low": 68000000
+  },
+  {
+    "name": "Eternal Boots",
+    "high": 50000000,
+    "low": 48000000
+  },
+  {
+    "name": "Spectral Spirit Shield",
+    "high": 50000000,
+    "low": 48000000
+  },
+  {
+    "name": "Arcane Spirit Shield",
+    "high": 100000000,
+    "low": 98000000
   },
   {
     "name": "Bandos Godsword",
@@ -40,29 +75,14 @@
     "low": 3000000
   },
   {
-    "name": "Elysian Spirit Shield",
-    "high": 800000000,
-    "low": 780000000
+    "name": "Dragon Warhammer",
+    "high": 60000000,
+    "low": 58000000
   },
   {
-    "name": "Spectral Spirit Shield",
-    "high": 50000000,
-    "low": 48000000
-  },
-  {
-    "name": "Arcane Spirit Shield",
-    "high": 100000000,
-    "low": 98000000
-  },
-  {
-    "name": "Sanguinesti Staff",
-    "high": 120000000,
-    "low": 115000000
-  },
-  {
-    "name": "Trident of the Swamp",
-    "high": 12000000,
-    "low": 11000000
+    "name": "Abyssal Whip",
+    "high": 4000000,
+    "low": 3900000
   },
   {
     "name": "Toxic Blowpipe",
@@ -70,9 +90,14 @@
     "low": 2400000
   },
   {
-    "name": "Dragon Warhammer",
-    "high": 60000000,
-    "low": 58000000
+    "name": "Trident of the Swamp",
+    "high": 12000000,
+    "low": 11000000
+  },
+  {
+    "name": "Trident",
+    "high": 12000000,
+    "low": 11000000
   },
   {
     "name": "Granite Maul",
@@ -85,39 +110,9 @@
     "low": 1900000
   },
   {
-    "name": "Rune Pouch",
-    "high": 900000,
-    "low": 800000
-  },
-  {
-    "name": "Barrows Gloves",
-    "high": 6000000,
-    "low": 5800000
-  },
-  {
-    "name": "Primordial Boots",
-    "high": 80000000,
-    "low": 78000000
-  },
-  {
-    "name": "Pegasian Boots",
-    "high": 70000000,
-    "low": 68000000
-  },
-  {
-    "name": "Eternal Boots",
-    "high": 50000000,
-    "low": 48000000
-  },
-  {
-    "name": "Infernal Cape",
-    "high": 3000000,
-    "low": 2900000
-  },
-  {
-    "name": "Fire Cape",
-    "high": 1200000,
-    "low": 1100000
+    "name": "Slayer Helmet",
+    "high": 8000000,
+    "low": 7800000
   },
   {
     "name": "Amulet of Torture",
@@ -133,46 +128,6 @@
     "name": "Occult Necklace",
     "high": 900000,
     "low": 850000
-  },
-  {
-    "name": "Zenyte Shard",
-    "high": 12000000,
-    "low": 11500000
-  },
-  {
-    "name": "Onyx",
-    "high": 2500000,
-    "low": 2400000
-  },
-  {
-    "name": "Tanzanite Fang",
-    "high": 180000000,
-    "low": 175000000
-  },
-  {
-    "name": "Blowpipe",
-    "high": 2500000,
-    "low": 2400000
-  },
-  {
-    "name": "Kodai Wand",
-    "high": 25000000,
-    "low": 24000000
-  },
-  {
-    "name": "Trident",
-    "high": 12000000,
-    "low": 11000000
-  },
-  {
-    "name": "Iban's Staff",
-    "high": 500000,
-    "low": 450000
-  },
-  {
-    "name": "Slayer Helmet",
-    "high": 8000000,
-    "low": 7800000
   },
   {
     "name": "Necklace of Anguish",
@@ -225,9 +180,34 @@
     "low": 1400000
   },
   {
+    "name": "Zenyte Shard",
+    "high": 12000000,
+    "low": 11500000
+  },
+  {
+    "name": "Onyx",
+    "high": 2500000,
+    "low": 2400000
+  },
+  {
     "name": "Barrows Gloves",
     "high": 6000000,
     "low": 5800000
+  },
+  {
+    "name": "Infernal Cape",
+    "high": 3000000,
+    "low": 2900000
+  },
+  {
+    "name": "Fire Cape",
+    "high": 1200000,
+    "low": 1100000
+  },
+  {
+    "name": "Rune Pouch",
+    "high": 900000,
+    "low": 800000
   },
   {
     "name": "Void Knight Top",
@@ -240,29 +220,14 @@
     "low": 80000
   },
   {
+    "name": "Void Knight Legs",
+    "high": 100000,
+    "low": 80000
+  },
+  {
     "name": "Void Knight Gloves",
     "high": 50000,
     "low": 40000
-  },
-  {
-    "name": "Void Mace",
-    "high": 150000,
-    "low": 130000
-  },
-  {
-    "name": "Void Ranger Attire",
-    "high": 150000,
-    "low": 130000
-  },
-  {
-    "name": "Void Seal",
-    "high": 200000,
-    "low": 180000
-  },
-  {
-    "name": "Void Wand",
-    "high": 150000,
-    "low": 130000
   },
   {
     "name": "Void Knight Helm",
@@ -270,27 +235,12 @@
     "low": 40000
   },
   {
-    "name": "Void Knight Legs",
+    "name": "Void Ranger Top",
     "high": 100000,
     "low": 80000
   },
   {
-    "name": "Void Knight Platebody",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Knight Platelegs",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Knight Robe Skirt",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Knight Top",
+    "name": "Void Ranger Legs",
     "high": 100000,
     "low": 80000
   },
@@ -300,12 +250,12 @@
     "low": 40000
   },
   {
-    "name": "Void Ranger Legs",
+    "name": "Void Mage Top",
     "high": 100000,
     "low": 80000
   },
   {
-    "name": "Void Ranger Top",
+    "name": "Void Mage Legs",
     "high": 100000,
     "low": 80000
   },
@@ -315,128 +265,28 @@
     "low": 40000
   },
   {
-    "name": "Void Mage Legs",
-    "high": 100000,
-    "low": 80000
+    "name": "Dragon Scimitar",
+    "high": 60000,
+    "low": 50000
   },
   {
-    "name": "Void Mage Top",
-    "high": 100000,
-    "low": 80000
+    "name": "Iban's Staff",
+    "high": 500000,
+    "low": 450000
   },
   {
-    "name": "Void Melee Helm",
-    "high": 50000,
-    "low": 40000
+    "name": "Void Seal",
+    "high": 200000,
+    "low": 180000
   },
   {
-    "name": "Void Melee Legs",
-    "high": 100000,
-    "low": 80000
+    "name": "Void Mace",
+    "high": 150000,
+    "low": 130000
   },
   {
-    "name": "Void Melee Top",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Knight Gloves",
-    "high": 50000,
-    "low": 40000
-  },
-  {
-    "name": "Void Knight Boots",
-    "high": 50000,
-    "low": 40000
-  },
-  {
-    "name": "Void Knight Helmet",
-    "high": 50000,
-    "low": 40000
-  },
-  {
-    "name": "Void Knight Robe",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Knight Skirt",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Knight Top",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Knight Legs",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Knight Platebody",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Knight Platelegs",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Knight Robe Skirt",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Knight Top",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Ranger Helm",
-    "high": 50000,
-    "low": 40000
-  },
-  {
-    "name": "Void Ranger Legs",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Ranger Top",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Mage Helm",
-    "high": 50000,
-    "low": 40000
-  },
-  {
-    "name": "Void Mage Legs",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Mage Top",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Melee Helm",
-    "high": 50000,
-    "low": 40000
-  },
-  {
-    "name": "Void Melee Legs",
-    "high": 100000,
-    "low": 80000
-  },
-  {
-    "name": "Void Melee Top",
-    "high": 100000,
-    "low": 80000
+    "name": "Void Wand",
+    "high": 150000,
+    "low": 130000
   }
 ]

@@ -499,6 +499,7 @@
   }
 
   function abrirModal(id) { document.getElementById(id).classList.add('active'); }
+  function abrirModalTitulo() { document.getElementById("inputTitulo").value = state.projectName; abrirModal("modalTitulo"); }
   function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }
   function guardarTitulo() { state.projectName = document.getElementById('inputTitulo').value; document.getElementById('projectTitle').textContent = state.projectName; guardarDatos(); cerrarModal('modalTitulo'); }
   function guardarBank() { state.bankActualGP = parseFloat(document.getElementById('inputBankGP').value); renderBank(); renderMetas(); guardarDatos(); cerrarModal('modalBank'); }
@@ -508,7 +509,30 @@
     state.timestamps.tasaGP = getHora12();
     renderHeaderTasas(); renderBank(); renderMetas(); guardarDatos(); cerrarModal('modalTasaGP');
   }
-  function guardarBond() { const f = document.getElementById('bondFecha').value; const d = parseInt(document.getElementById('bondDias').value) || 14; const v = new Date(new Date(f).getTime() + d*24*60*60*1000).toISOString().split('T')[0]; state.membresia = { fechaCompra: f, fechaVencimiento: v, dias: d }; renderMembresia(); guardarDatos(); cerrarModal('modalBond'); }
+  function guardarBond() { 
+    const f = document.getElementById('bondFecha').value; 
+    const d = parseInt(document.getElementById('bondDias').value) || 14; 
+    const v = new Date(new Date(f).getTime() + d*24*60*60*1000).toISOString().split('T')[0]; 
+    const anterior = JSON.stringify(state.membresia);
+    state.membresia = { fechaCompra: f, fechaVencimiento: v, dias: d, anterior: anterior }; 
+    renderMembresia(); 
+    guardarDatos(); 
+    cerrarModal('modalBond'); 
+  }
+  function deshacerBond() {
+    if(state.membresia && state.membresia.anterior) {
+      try {
+        state.membresia = JSON.parse(state.membresia.anterior);
+        renderMembresia();
+        guardarDatos();
+        alert('Bond revertida a su estado anterior');
+      } catch(e) {
+        alert('No se pudo revertir la Bond');
+      }
+    } else {
+      alert('No hay cambios previos que revertir');
+    }
+  }
   function guardarFarmeo() { 
     const f = document.getElementById('farmeoFecha').value;
     const g = parseFloat(document.getElementById('farmeoGP').value);
