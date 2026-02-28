@@ -478,13 +478,10 @@
     const res = document.getElementById('searchResults');
     res.innerHTML = 'Buscando en Grand Exchange...';
     try {
-      const url = 'https://prices.runescape.wiki/api/v1/osrs/search?q=' + encodeURIComponent(q);
-      const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
-      const response = await fetch(proxyUrl);
-      if(!response.ok) throw new Error('Proxy error');
-      const proxyData = await response.json();
-      const parsed = JSON.parse(proxyData.contents);
-      const items = parsed.items || [];
+      const response = await fetch('/api/search?q=' + encodeURIComponent(q));
+      if(!response.ok) throw new Error('API error');
+      const data = await response.json();
+      const items = data.items || [];
       if(!items || items.length === 0) { res.innerHTML = '<p style="text-align:center;color:#999;">No se encontraron items tradeables.</p>'; return; }
       res.innerHTML = items.slice(0, 20).map(i => {
         const high = i.high || 0;
