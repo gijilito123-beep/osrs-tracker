@@ -263,6 +263,7 @@
     } catch(e) {
       console.log('Error BCV:', e);
     }
+    
     try {
       const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves');
       if(r.ok) {
@@ -276,7 +277,9 @@
     } catch(e) {
       console.log('Error Binance:', e);
     }
+    
     renderHeaderTasas();
+    guardarDatos();
   }
 
   async function cargarDatos() {
@@ -324,22 +327,22 @@
       <div class="tasa-mini" onclick="abrirModal('modalTasaGP')">
         <div class="tasa-mini-label">m/USD</div>
         <div class="tasa-mini-value">${state.tasaGPUSD.toFixed(5)}</div>
-        <div class="tasa-mini-hora">${state.timestamps.tasaGP}</div>
+        <div class="tasa-mini-hora">Actualizado: ${state.timestamps.tasaGP}</div>
       </div>
       <div class="tasa-mini" onclick="abrirModal('modalTasaGP')">
         <div class="tasa-mini-label">m/Bs</div>
         <div class="tasa-mini-value">${state.tasaGPBS.toFixed(2)}</div>
-        <div class="tasa-mini-hora">${state.timestamps.tasaGP}</div>
+        <div class="tasa-mini-hora">Actualizado: ${state.timestamps.tasaGP}</div>
       </div>
       <div class="tasa-mini">
         <div class="tasa-mini-label">BCV</div>
         <div class="tasa-mini-value">${state.tasaBCV.toFixed(2)}</div>
-        <div class="tasa-mini-hora">${state.timestamps.tasaBCV}</div>
+        <div class="tasa-mini-hora">Actualizado: ${state.timestamps.tasaBCV}</div>
       </div>
     `;
     document.getElementById('headerTasas').innerHTML = html;
     document.getElementById('tasaBinanceDisplay').textContent = state.tasaBinance.toFixed(2);
-    document.getElementById('tasaBinanceHora').textContent = state.timestamps.tasaBinance;
+    document.getElementById('tasaBinanceHora').textContent = 'Actualizado: ' + state.timestamps.tasaBinance;
   }
 
   function renderBank() {
