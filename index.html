@@ -250,6 +250,7 @@
   function guardarDatos() { localStorage.setItem('osrs_tracker_v3', JSON.stringify(state)); }
 
   async function actualizarTasas() {
+    // Actualizar BCV
     try {
       const r = await fetch('https://open.er-api.com/v6/latest/USD');
       if(r.ok) {
@@ -264,6 +265,7 @@
       console.log('Error BCV:', e);
     }
     
+    // Actualizar Binance
     try {
       const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTVES');
       if(r.ok) {
@@ -289,6 +291,11 @@
         console.log('Error Binance:', e2);
       }
     }
+    
+    // Actualizar tasas de GP (m/USD y m/Bs)
+    state.tasaGPUSD = state.tasaBCV > 0 ? (1 / state.tasaBCV) : 0.0002;
+    state.tasaGPBS = state.tasaGPUSD * state.tasaBCV;
+    state.timestamps.tasaGP = getFechaHora();
     
     renderHeaderTasas();
     guardarDatos();
