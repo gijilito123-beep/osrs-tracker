@@ -265,9 +265,10 @@
       console.log('Error BCV:', e);
     }
     
-    // Actualizar Binance
+    // Actualizar Binance usando proxy CORS
     try {
-      const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTVES');
+      const proxyUrl = 'https://cors-anywhere.herokuapp.com/https://api.binance.com/api/v3/ticker/price?symbol=USDTVES';
+      const r = await fetch(proxyUrl);
       if(r.ok) {
         const d = await r.json();
         const p = parseFloat(d.price);
@@ -292,10 +293,12 @@
       }
     }
     
-    // Actualizar tasas de GP (m/USD y m/Bs)
-    state.tasaGPUSD = state.tasaBCV > 0 ? (1 / state.tasaBCV) : 0.0002;
-    state.tasaGPBS = state.tasaGPUSD * state.tasaBCV;
-    state.timestamps.tasaGP = getFechaHora();
+    // Actualizar tasas de GP (m/USD y m/Bs) basadas en BCV
+    if(state.tasaBCV > 0) {
+      state.tasaGPUSD = 1 / state.tasaBCV;
+      state.tasaGPBS = state.tasaGPUSD * state.tasaBCV;
+      state.timestamps.tasaGP = getFechaHora();
+    }
     
     renderHeaderTasas();
     guardarDatos();
