@@ -265,32 +265,19 @@
       console.log('Error BCV:', e);
     }
     
-    // Actualizar Binance usando proxy CORS
+    // Actualizar Binance usando CoinGecko (sin CORS)
     try {
-      const proxyUrl = 'https://cors-anywhere.herokuapp.com/https://api.binance.com/api/v3/ticker/price?symbol=USDTVES';
-      const r = await fetch(proxyUrl);
+      const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves');
       if(r.ok) {
         const d = await r.json();
-        const p = parseFloat(d.price);
-        if(!isNaN(p) && p > 0) {
-          state.tasaBinance = p;
+        const u = parseFloat(d.tether?.ves);
+        if(!isNaN(u) && u > 0) {
+          state.tasaBinance = u;
           state.timestamps.tasaBinance = getFechaHora();
         }
       }
     } catch(e) {
-      try {
-        const r2 = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves');
-        if(r2.ok) {
-          const d = await r2.json();
-          const u = parseFloat(d.tether?.ves);
-          if(!isNaN(u) && u > 0) {
-            state.tasaBinance = u;
-            state.timestamps.tasaBinance = getFechaHora();
-          }
-        }
-      } catch(e2) {
-        console.log('Error Binance:', e2);
-      }
+      console.log('Error Binance:', e);
     }
     
     // Actualizar tasas de GP (m/USD y m/Bs) basadas en BCV
