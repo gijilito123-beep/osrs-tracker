@@ -250,7 +250,7 @@
   function guardarDatos() { localStorage.setItem('osrs_tracker_v3', JSON.stringify(state)); }
 
   async function actualizarTasas() {
-    // Actualizar BCV
+    // Actualizar SOLO BCV (nunca sobrescribir m/USD, m/Bs ni Binance)
     try {
       const r = await fetch('https://open.er-api.com/v6/latest/USD');
       if(r.ok) {
@@ -263,28 +263,6 @@
       }
     } catch(e) {
       console.log('Error BCV:', e);
-    }
-    
-    // Actualizar Binance usando CoinGecko (sin CORS)
-    try {
-      const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves');
-      if(r.ok) {
-        const d = await r.json();
-        const u = parseFloat(d.tether?.ves);
-        if(!isNaN(u) && u > 0) {
-          state.tasaBinance = u;
-          state.timestamps.tasaBinance = getFechaHora();
-        }
-      }
-    } catch(e) {
-      console.log('Error Binance:', e);
-    }
-    
-    // Actualizar tasas de GP (m/USD y m/Bs) basadas en BCV
-    if(state.tasaBCV > 0) {
-      state.tasaGPUSD = 1 / state.tasaBCV;
-      state.tasaGPBS = state.tasaGPUSD * state.tasaBCV;
-      state.timestamps.tasaGP = getFechaHora();
     }
     
     renderHeaderTasas();
@@ -519,7 +497,7 @@
   function guardarTasaGP() { 
     state.tasaGPUSD = parseFloat(document.getElementById('inputTasaGPUSD').value);
     state.tasaGPBS = parseFloat(document.getElementById('inputTasaGPBS').value);
-    state.timestamps.tasaGP = getHora12();
+    state.timestamps.tasaGP = getFechaHora();
     renderHeaderTasas(); renderBank(); renderMetas(); guardarDatos(); cerrarModal('modalTasaGP');
   }
   function guardarBond() { 
